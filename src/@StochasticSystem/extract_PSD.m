@@ -120,10 +120,10 @@ end
 OUTPUT.PSD=We;
 OUTPUT.omega=omega;
 %%
-figure
-plot(omega,We,'linewidth', 1.5)
-xlim(parRange);
-grid on
+% figure
+% plot(omega,We,'linewidth', 1.5)
+% xlim(parRange);
+% grid on
 
 %%
 
