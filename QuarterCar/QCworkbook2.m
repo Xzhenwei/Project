@@ -2,7 +2,7 @@
 n=2; kappa=200;
 [M,C,K,fnl,f_0] = build_model(kappa,n);
 % LINEAR QUARTER CAR with Dimension 2;
-nRealization=1;
+nRealization=20;
 T0=100; %% PSD frequency domain resolution is ~ 1/T0
 nPoints=2^14; %% control the accuracy of numerical differential equation
 epsilon=1000; %% forcing magnitude
@@ -56,3 +56,5 @@ plot(w,linear_analytic(1,:),'linewidth',1)
 legend('SSM','nonlinear simulation','linear analytic')
 xlim([0,20]);
 grid on
+%%
+save('workspace.mat')
