@@ -56,3 +56,5 @@ plot(w,linear_analytic(1,:),'linewidth',1)
 legend('SSM','nonlinear simulation','linear analytic')
 xlim([0,20]);
 grid on
+%%
+save('workspace.mat')
