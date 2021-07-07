@@ -20,7 +20,7 @@ m = obj.SSM.dimManifold;
 
 % the resolution of solving 2-dim system is higher than original system in
 % order to capture the high frequency information
-num_points=obj.nPoints*2^0;
+num_points=obj.nPoints*2^2;
 T=obj.timeSpan;
 p0 = zeros(m,1);
 

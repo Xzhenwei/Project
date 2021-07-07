@@ -26,8 +26,7 @@ addpath(fullfile(maindir, 'src','multiindex'));
 addpath(fullfile(maindir, 'src', 'frc'));
 
 addpath(fullfile(maindir, 'QuarterCar'));
-run('QCworkbookEuler.m')
-save('workspace1.mat')
+
 end
 
 

@@ -1,8 +1,8 @@
-classdef StochasticSystem < matlab.mixin.SetGetExactNames
+classdef StochasticSystem < DynamicalSystem
     
     
     properties
-        System      % dynamical system object
+%         System      % dynamical system object
         SSM         % SSM object
         dimSystem   % Phase space dimensionality
 
