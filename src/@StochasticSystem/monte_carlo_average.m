@@ -1,7 +1,8 @@
 function [w,PSD_a]=monte_carlo_average(obj,method,PSDpair,nRealization)
 assert(nRealization > 1, ' Please use sde.solver for one simulation')
 
-pool = parpool('local',2);
+euler = parcluster('local');
+pool = parpool(euler,24);
 
 [w,X] = obj.sde_solver(method,PSDpair);
 
