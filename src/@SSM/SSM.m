@@ -18,6 +18,7 @@ classdef SSM < Manifold
         
         [FRC] = FRC_level_set(obj, resMode, order, parName, parRange)        
         
+        p = indirect_Euler_SSM(obj, N,T0,PSD,f,m,Wnode,R0)
     end
 end
 

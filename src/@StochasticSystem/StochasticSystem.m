@@ -3,13 +3,8 @@ classdef StochasticSystem < DynamicalSystem
     
     properties
 %         System      % dynamical system object
-        SSM         % SSM object
-        dimSystem   % Phase space dimensionality
+%         SSM         % SSM object
 
-        dimManifold % manifold dimensionality
-                
-        Options = ManifoldOptions()               
-        
         filterPSD = []      % input PSD defined by Linear SYSTEM
         samplePSD = []      % input PSD defined by sampled PSD
         input
@@ -33,38 +28,37 @@ classdef StochasticSystem < DynamicalSystem
 %         % computational time estimate in seconds at each order
 %     end
 
-    
     methods
         %% Constructor
-        function obj = StochasticSystem(ClassInput,ClassType)
-            %STOCHASTIC Construct an instance of this class
-            %   Detailed explanation goes here
-            switch lower(ClassType)
-                case 'system'
-                    obj.System = ClassInput;        
-                case 'ssm'
-                    obj.SSM = ClassInput;
-            end
-        end
+%         function obj = StochasticSystem(ClassInput,ClassType)
+%             %STOCHASTIC Construct an instance of this class
+%             %   Detailed explanation goes here
+%             switch lower(ClassType)
+%                 case 'system'
+%                     obj.System = ClassInput;        
+%                 case 'ssm'
+%                     obj.SSM = ClassInput;
+%             end
+%         end
 
         %% SET methods
 
         
-        %% GET methods        
-        function N = get.dimSystem(obj)
-            N = obj.System.N;
-        end
-        
-        function M = get.dimManifold(obj)
-            M = 0;
-            if ~isempty(obj.E)
-                M = M + size(obj.E.basis,2);
-            end
-            
-            if ~isempty(obj.N)
-                M = M + numel(obj.N.Omega);
-            end
-        end
+%         %% GET methods        
+%         function N = get.dimSystem(obj)
+%             N = obj.System.N;
+%         end
+%         
+%         function M = get.dimManifold(obj)
+%             M = 0;
+%             if ~isempty(obj.E)
+%                 M = M + size(obj.E.basis,2);
+%             end
+%             
+%             if ~isempty(obj.N)
+%                 M = M + numel(obj.N.Omega);
+%             end
+%         end
         
         %% other methods
         function add_random_forcing(obj,nRealization,timeSpan,nPoints,forcingdof)
@@ -89,10 +83,12 @@ classdef StochasticSystem < DynamicalSystem
         [w,PHI]=sde_solver(obj,SDEmethod,PowerSpectralPair)
         
         linear_analytic=compute_linear_PSD(obj,omega,PSD)
-        %%% SSM
-        PSD = extract_PSD(obj, parRange, order, method)
         
-        p=indirect_Euler_SSM(obj, nPoints, timeSpan, PSD, dimFilter, dimManifold, Wnode, R0)
+        [w_a,PSD_a] = monte_carlo_average(obj,method,PSDpair,nRealization)
+        %%% SSM
+%         PSD = extract_PSD(obj, parRange, order, method)
+%         
+%         p=indirect_Euler_SSM(obj, nPoints, timeSpan, PSD, dimFilter, dimManifold, Wnode, R0)
     end
 end
 

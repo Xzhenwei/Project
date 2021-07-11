@@ -2,8 +2,8 @@ function linear_analytic=compute_linear_PSD(obj,omega,PSD)
 % linear_analytic. This function computes the correspoding linear response
 % PSD with the input PSD along with its frequency domain vector omega.
 
-n = obj.System.n;
-M = obj.System.M; C = obj.System.C; K = obj.System.K;
+n = obj.n;
+M = obj.M; C = obj.C; K = obj.K;
 forcingdof = obj.forcingdof;
 
 Phi_F = zeros(n,n);

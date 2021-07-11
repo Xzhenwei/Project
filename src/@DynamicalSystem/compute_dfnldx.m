@@ -4,7 +4,7 @@ function dfnl = compute_dfnldx(obj,x,xd)
 % mechanical system. Currently, we do not treat velocity dependent
 % nonlinearity.
 
-assert(obj.order == 2, ' dfnldx can only be computed for second-order systems')
+% assert(obj.order == 2, ' dfnldx can only be computed for second-order systems')
 
 dfnl = sparse(obj.n,obj.n);
 for j = 1:length(obj.fnl)

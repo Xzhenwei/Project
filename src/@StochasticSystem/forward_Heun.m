@@ -1,5 +1,5 @@
 function [X,V]=forward_Heun(obj,N,T0,PSD)
-    n=obj.System.n;
+    n=obj.n;
     Mz=PSD.Mz;
     Cz=PSD.Cz;
     Kz=PSD.Kz;

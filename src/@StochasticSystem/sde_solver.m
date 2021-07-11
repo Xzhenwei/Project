@@ -2,8 +2,7 @@ function [w,outputPSD]=sde_solver(obj,SDEmethod,PowerSpectralPair)
 
 N = obj.nPoints;
 T0 = obj.timeSpan;
-nRealization = obj.nRealization;
-dim = obj.System.n;
+dim = obj.n;
 
 % initial conditions are set to be 0
 X0 = zeros(dim,1); V0 = X0;
@@ -31,24 +30,25 @@ X0 = zeros(dim,1); V0 = X0;
 %%% initialization for output PSD
 % SpecDensPair format ie: [1,1;2,2;3,3]
 nPSDpairs = size(PowerSpectralPair,1);
-Cy = zeros(nPSDpairs,N+1);   Gy = Cy; 
-
-    for n=1:nRealization %start m number of iterations
-        obj.Fsto=generate_stochastic(obj,StochasticRealization);
+Cy = zeros(nPSDpairs,N+1);   
         T=linspace(0,T0,N+1); detT=T0/N;
         % SDE
             switch SDEmethod
                 case "filter ImplicitMidPoint"
-                    G=zeros(obj.System.n,length(Mz)); %G(end,:)=ones(1,length(Mz));
+                    G=zeros(obj.n,length(Mz)); %G(end,:)=ones(1,length(Mz));
                     PSD.G=G;
                     [X,V]=implicit_Mid_Point(obj,N,T0,PSD);
                 case "filterHeun"
             %Forward Heun's method
-                    G=zeros(obj.System.n,length(Mz)); %G(end,:)=ones(1,length(Mz));
+                    obj.Fsto = generate_stochastic(obj,StochasticRealization);
+
+                    G=zeros(obj.n,length(Mz)); %G(end,:)=ones(1,length(Mz));
                     PSD.G=G;
                     [X,V]=forward_Heun(obj,N,T0,PSD);
             % Newmark method
                 case "Newmark"
+                    obj.Fsto = generate_stochastic(obj,StochasticRealization);
+                    
                     A0=zeros(dim,1);
                     TI_sto = ImplicitNewmark('timestep',detT,'alpha',0.005,'linear',obj.linear);
                     % Modal linear Residual evaluation function handle
@@ -63,11 +63,8 @@ Cy = zeros(nPSDpairs,N+1);   Gy = Cy;
         for j=1:nPSDpairs
             [w,Cy(j,:)]=crossPSDestimator(X(PowerSpectralPair(j,1),:),X(PowerSpectralPair(j,2),:),T);
         end
-
-        Gy=Gy+Cy;
-         disp(['reamaining number of Monte Carlo simulation: ', num2str((nRealization-n))])
-    end
-    outputPSD=Gy/nRealization;
+        
+        outputPSD=Cy;
     
     if StochasticRealization== "indirect"
         Z11 = zeros(1, N+1);
@@ -85,8 +82,6 @@ Cy = zeros(nPSDpairs,N+1);   Gy = Cy;
         obj.input.PSD=obj.samplePSD(1,:);
     end
 end
-
-
 function [w,Gxy]=crossPSDestimator(x,y,t)
 %%% Reference: Preunont Andre, Random vibration and Spectral Analysis Chp 12.9
 %%%% numebr of sampling points 

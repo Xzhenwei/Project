@@ -65,7 +65,7 @@ end
 function J = compute_J_R0(R0,n, p)
 % COMPUTE_J_R0 This function computes the Jacobian of  nonlinear R0
 % with respect to the reduced coordinate p in a first-order
-% system.
+% 
 J = zeros(n,n); T={};l=0;
 
 % transfer multi-index to tensor

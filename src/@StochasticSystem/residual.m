@@ -14,17 +14,17 @@ function [ r, drdqdd,drdqd,drdq, c0] = residual(obj, q, qd, qdd, t)
 
 assert(obj.order == 2, ' residual can only be computed for second-order systems')
 
-F_elastic = obj.System.K * q + obj.System.compute_fnl(q,qd);
+F_elastic = obj.K * q + obj.compute_fnl(q,qd);
 
 F_external = obj.compute_fstochastic(t);
 
-F_inertial = obj.System.M * qdd;
-F_damping = obj.System.C * qd;
+F_inertial = obj.M * qdd;
+F_damping = obj.C * qd;
 
 r = F_inertial + F_damping + F_elastic - F_external ;
-drdqdd = obj.System.M;
-drdqd = obj.System.C + obj.System.compute_dfnldxd(q,qd);
-drdq = obj.System.K + obj.System.compute_dfnldx(q,qd);
+drdqdd = obj.M;
+drdqd = obj.C + obj.compute_dfnldxd(q,qd);
+drdq = obj.K + obj.compute_dfnldx(q,qd);
 %% 
 % We use the following measure to comapre the norm of the residual $\mathbf{r}$
 % 

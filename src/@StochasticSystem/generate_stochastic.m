@@ -16,7 +16,7 @@ function [Fstochastic] = generate_stochastic(obj,method)
     % is indirect, the input should include linear system's parameters: M C
     % K matrices as well as the white noise magnitude.
     
-dim=obj.System.n;
+dim=obj.n;
 T0=obj.timeSpan;
 N=obj.nPoints;
 forcingdof=obj.forcingdof;
@@ -103,13 +103,14 @@ forcingdof=obj.forcingdof;
     
                 %%% deleting first zero elements
                 for k=1:N+1
-                    for j=1:dim
-                        if Fext(j,k)~=0
+                    for f=1:dim
+                        if Fext(f,k)~=0
                            stp_i=k;
                             break;
                         end
                     end 
-                        if Fext(j,k)~=0
+                    
+                        if Fext(f,k)~=0
                            stp_i=k;
                             break;
                         end

@@ -1,7 +1,7 @@
 function [X,V]=implicit_Mid_Point(obj,N,T0,PSD)
     maxiter=10000; tol=1e-7;
 
-    n=obj.System.n;
+    n=obj.n;
     Mz=PSD.Mz;
     Cz=PSD.Cz;
     Kz=PSD.Kz;
@@ -11,9 +11,9 @@ function [X,V]=implicit_Mid_Point(obj,N,T0,PSD)
     detT=T0/N;  %T=linspace(0,T0,N+1);
     
     sigma=sqrt(S*2*pi); %variance
-    M = [Mz, sparse(m,n); sparse(n,m), obj.System.M];
-    C = [Cz, sparse(m,n); sparse(n,m), obj.System.C];
-    K = [Kz, sparse(m,n); -G, obj.System.K];
+    M = [Mz, sparse(m,n); sparse(n,m), obj.M];
+    C = [Cz, sparse(m,n); sparse(n,m), obj.C];
+    K = [Kz, sparse(m,n); -G, obj.K];
     
     q=zeros(m+n,N+1); qd=zeros(m+n,N+1); 
     
@@ -83,10 +83,10 @@ function [X,V]=implicit_Mid_Point(obj,N,T0,PSD)
     while error1 > tol
         iter = iter+1; % update iteration
         
-        fnl=[sparse(m,1); obj.System.compute_fnl(qhat(m+1:end),qdhat(m+1:end))];
-        f= (M+1/2*C*detT)*(qhat-q(:,i))+1/4*K*qhat*detT^2+1/4*fnl*detT^2-1/2*detT*(M*qd(:,i)+1/2*dW);
+        fnlx=[sparse(m,1); obj.compute_fnl(qhat(m+1:end),qdhat(m+1:end))];
+        f= (M+1/2*C*detT)*(qhat-q(:,i))+1/4*K*qhat*detT^2+1/4*fnlx*detT^2-1/2*detT*(M*qd(:,i)+1/2*dW);
         %% evaluate jacobian
-        dfnldq=blkdiag(zeros(m,m),obj.System.compute_dfnldx(qhat(m+1:end),qdhat(m+1:end)));
+        dfnldq=blkdiag(zeros(m,m),obj.compute_dfnldx(qhat(m+1:end),qdhat(m+1:end)));
 
         J= M+1/2*C*detT+1/4*detT^2*(K+dfnldq);
 
@@ -104,7 +104,7 @@ function [X,V]=implicit_Mid_Point(obj,N,T0,PSD)
         end
         
     end
-    fnl_hat=[sparse(m,1); obj.System.compute_fnl(qhat(m+1:end),qdhat(m+1:end))];
+    fnl_hat=[sparse(m,1); obj.compute_fnl(qhat(m+1:end),qdhat(m+1:end))];
     qdhat=(M+1/2*C*detT)\(M*qd(:,i)-1/2*(K*qhat+fnl_hat)*detT+1/2*dW);
 %     iter
 %     tEnd = toc(tStart)
@@ -112,7 +112,7 @@ function [X,V]=implicit_Mid_Point(obj,N,T0,PSD)
     %% update
     q(:,i+1)=q(:,i)+detT*qdhat;
     xhat=qhat(m+1:end);xdhat=qdhat(m+1:end);
-    fnl_hat=[sparse(m,1); obj.System.compute_fnl(xhat,xdhat)];
+    fnl_hat=[sparse(m,1); obj.compute_fnl(xhat,xdhat)];
     qd(:,i+1)=qd(:,i)-M\(C*qdhat+K*qhat+fnl_hat)*detT+M\dW;
     disp(['time integration completed: ', num2str(i/N*100), '%'])    
     end

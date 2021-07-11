@@ -14,22 +14,22 @@ function OUTPUT = extract_PSD(obj, parRange, ORDER, method)
 % for j = 1:numel(ORDER)
 %     order = ORDER(j);  % SSM approximation order
 order = ORDER;
-[W0, R0] = obj.SSM.compute_whisker(order);
+[W0, R0] = obj.compute_whisker(order);
 %% computation of the reduced dynamics
-m = obj.SSM.dimManifold; 
+m = obj.dimManifold; 
 
 % the resolution of solving 2-dim system is higher than original system in
 % order to capture the high frequency information
-num_points=obj.nPoints*2^2;
-T=obj.timeSpan;
+num_points = obj.System.nPoints*2^2;
+T = obj.System.timeSpan;
 p0 = zeros(m,1);
 
-detT=T/num_points; t=0:detT:T; 
+detT = T/num_points; t=0:detT:T; 
 
-Wnode=obj.SSM.E.adjointBasis';
+Wnode = obj.E.adjointBasis';
 
-MontCarlo=obj.nRealization;   Gzz=0;
-n=obj.System.n;
+MontCarlo = obj.System.nRealization;   Gzz = 0;
+n = obj.System.n;
 
 
 %% backward euler
@@ -54,7 +54,7 @@ for l=1:MontCarlo
 %% indirect filter method
 switch lower(method)
     case "filter"
-        PSD=obj.filterPSD;
+        PSD=obj.System.filterPSD;
         Mz=PSD.Mz;
         PSD.G=zeros(n,length(Mz)); %G(end,:)=ones(1,length(Mz));
         f=length(Mz);
@@ -91,15 +91,15 @@ end
 Gzz=Gzz/MontCarlo;
 
 %% calculating non-autonomous analytically
-        omega=obj.input.omega;
-        forcePSD=obj.input.PSD;
+        omega=obj.System.input.omega;
+        forcePSD=obj.System.input.PSD;
     
     B=obj.System.B; M=obj.System.M; C=obj.System.C; K=obj.System.K; 
     F_psd=zeros(n,n);
     G=eye(2*n)-B*obj.E.basis*Wnode;
     G11=G(1:n,1:n);
     Z11=zeros(1,length(omega)); 
-    forcingdof=obj.forcingdof;
+    forcingdof=obj.System.forcingdof;
 for j=1:length(omega)
 % second order system
     F_psd(forcingdof,forcingdof)=forcePSD(j);
@@ -109,7 +109,7 @@ for j=1:length(omega)
 
 end
 %%
-num_points=obj.num_points;
+num_points=obj.System.num_points;
 %%%Adding PSD
 We=zeros(num_points+1,1)'; 
 

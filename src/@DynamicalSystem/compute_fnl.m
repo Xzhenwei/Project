@@ -3,7 +3,7 @@ function fnl = compute_fnl(obj,x,xd)
 % mechanical system. Currently, we do not treat velocity dependent
 % nonlinearity.
 
-assert(obj.order == 2, ' fnl can only be computed for second-order systems')
+% assert(obj.order == 2, ' fnl can only be computed for second-order systems')
 
 fnl = zeros(obj.n,1);
 for j = 1:length(obj.fnl)
