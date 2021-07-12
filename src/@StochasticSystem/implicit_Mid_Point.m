@@ -12,8 +12,10 @@ function [X,V]=implicit_Mid_Point(obj,N,T0,PSD)
     
     sigma=sqrt(S*2*pi); %variance
     M = [Mz, sparse(m,n); sparse(n,m), obj.M];
-    C = [Cz, sparse(m,n); sparse(n,m), obj.C];
-    K = [Kz, sparse(m,n); -G, obj.K];
+%     C = [Cz, sparse(m,n); sparse(n,m), obj.C]; filter with nonzero mean
+%     K = [Kz, sparse(m,n); -G, obj.K];
+    C = [Cz, sparse(m,n); -G, obj.C];
+    K = [Kz, sparse(m,n); sparse(n,m), obj.K];
     
     q=zeros(m+n,N+1); qd=zeros(m+n,N+1); 
     
@@ -114,7 +116,7 @@ function [X,V]=implicit_Mid_Point(obj,N,T0,PSD)
     xhat=qhat(m+1:end);xdhat=qdhat(m+1:end);
     fnl_hat=[sparse(m,1); obj.compute_fnl(xhat,xdhat)];
     qd(:,i+1)=qd(:,i)-M\(C*qdhat+K*qhat+fnl_hat)*detT+M\dW;
-%     disp(['time integration completed: ', num2str(i/N*100), '%'])    
+    disp(['time integration completed: ', num2str(i/N*100), '%'])    
     end
 
 X=q(m+1:end,:); V=qd(m+1:end,:);

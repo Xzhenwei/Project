@@ -11,7 +11,7 @@ q=[z;v;p];
 dW=zeros(f+f+m,1); 
 
 for i=1:N
-    
+
     detu=sigma*randn*sqrt(detT);  dW(2*f)=detu; 
     error1 = 1e8;
     iter = 0;
@@ -22,12 +22,12 @@ for i=1:N
     
         F=[z(:,i+1)-v(:,i+1)*detT-z(:,i);...
         (M+C*detT)*v(:,i+1)+K*z(:,i+1)*detT-M*v(:,i);...
-        p(:,i+1)-expand_coefficients(R0,m, p(:,i+1))*detT-Wnode*Gs*z(:,i+1)*detT-p(:,i)]...
+        p(:,i+1)-expand_coefficients(R0,m, p(:,i+1))*detT-Wnode*Gs*v(:,i+1)*detT-p(:,i)]...
         -dW;
     
         Jp = compute_J_R0(R0,m, p(:,i+1));
        
-        J= [eye(f),-eye(f)*detT ,zeros(m,m);K*detT,M+C*detT,zeros(m,m);-Wnode*Gs*detT,zeros(f,f),eye(m)-Jp*detT];
+        J= [eye(f),-eye(f)*detT ,zeros(m,m);K*detT,M+C*detT,zeros(m,m);zeros(f,f),-Wnode*Gs*detT,eye(m)-Jp*detT];
         y = -J\F;  % solve the linear equations
         q(:,i+1) = q(:,i+1) + y;
  

@@ -70,9 +70,9 @@ Cy = zeros(nPSDpairs,N+1);
         Z11 = zeros(1, N+1);
         Phi_F = zeros(length(Mz), length(Mz));
         for j = 1:N + 1
-         Hw = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz);
+         Hw = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz)*1i*w(j);
          Phi_F(end,end) = WhiteNoise_S;
-         Zj=(-w(j)^2*Mz+1i*w(j)*Cz+Kz)\Phi_F*Hw.';
+         Zj=Hw*Phi_F*Hw.';
          Z11(j)=norm(Zj(1,1)); %% this is the input analytical signal/process
         end
         obj.input.omega=w;

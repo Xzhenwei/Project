@@ -6,7 +6,7 @@ function [omega,outputPSD] = extract_PSD(obj, PSDpair, ORDER, method)
 %  The obtained response is finally mapped back to physical coordinates and 
 %  compute the PSD. 
 %  
-%
+% 
 % parRange: range of frequency
 % order:    order of SSM expansion to be used for FRC computation
 
