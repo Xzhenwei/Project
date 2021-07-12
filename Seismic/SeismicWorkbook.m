@@ -6,7 +6,7 @@ kappa2 = 0;
 kappa3 = 0;
 
 [M,C,K,fnl] = build_model(n,m,c,k,kappa2,kappa3);
-nRealization=2;
+nRealization=1;
 T0=100; %% PSD frequency domain resolution is ~ 1/T0
 nPoints=2^14; %% control the accuracy of numerical differential equation
 epsilon=1000; %% forcing magnitude
@@ -22,7 +22,7 @@ set(SS.Options,'Emax',5,'Nmax',10,'notation','multiindex')
 SS.add_random_forcing(nRealization, T0, nPoints,forcingdof);
 
 %%%%%%%% Above is forcing setting and set to DynamicalSystem class
-
+clusterRun=false;
 method="filter ImplicitMidPoint";
 PSDpair=[n,n];
 %%
@@ -30,7 +30,7 @@ PSDpair=[n,n];
 firts_res=abs(imag(D(1)));
 %%
 tic
-[w,outputPSD] = SS.monte_carlo_average(method,PSDpair,nRealization);
+[w,outputPSD] = SS.sde_solver(method,PSDpair);
 time_sde=toc;
 disp(['Total number of ',num2str(nRealization),'# takes ',...
     num2str(time_sde),' amount of time'])
@@ -45,7 +45,7 @@ masterModes = [1,2];
 S.choose_E(masterModes);
 order = 5; % SSM approximation order
 
-ssmPSD=S.compute_ssmPSD(PSDpair, order,"filter");
+[wss,ssmPSD]=S.compute_ssmPSD(PSDpair, order,"filter",clusterRun);
 
 %% this section plots the result
 figure

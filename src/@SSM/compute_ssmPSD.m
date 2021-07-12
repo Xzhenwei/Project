@@ -1,6 +1,7 @@
 function [w,Gss] = compute_ssmPSD(obj, PSDpair, ORDER, method,clusterRun)
 
-if obj.System.nRealization>1
+nRealization = obj.System.nRealization;
+if nRealization>1
 
     if clusterRun
         euler = parcluster('local');
@@ -9,10 +10,10 @@ if obj.System.nRealization>1
         pool = parpool('local',2);
     end
 
-    [w,Gss] = obj.extract_PSD(obj, PSDpair, ORDER, method);
+    [w,Gss] = obj.extract_PSD( PSDpair, ORDER, method);
 
     parfor i=1:nRealization-1
-        [~,outputPSD] = obj.extract_PSD(obj, PSDpair, ORDER, method);
+        [~,outputPSD] = obj.extract_PSD( PSDpair, ORDER, method);
         Gss = Gss+outputPSD;
     end
     Gss = Gss/nRealization;
@@ -20,7 +21,7 @@ if obj.System.nRealization>1
     pool.delete()
 else
     
-    [w,Gss] = extract_PSD(obj, PSDpair, ORDER, method);
+    [w,Gss] = obj.extract_PSD( PSDpair, ORDER, method);
 end
 
 
