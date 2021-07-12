@@ -6,7 +6,7 @@ kappa2 = 0;
 kappa3 = 0;
 
 [M,C,K,fnl] = build_model(n,m,c,k,kappa2,kappa3);
-nRealization=20;
+nRealization=2;
 T0=100; %% PSD frequency domain resolution is ~ 1/T0
 nPoints=2^14; %% control the accuracy of numerical differential equation
 epsilon=1000; %% forcing magnitude
@@ -36,18 +36,7 @@ disp(['Total number of ',num2str(nRealization),'# takes ',...
     num2str(time_sde),' amount of time'])
 %%
 linear_analytic=SS.compute_linear_PSD(SS.input.omega,SS.input.PSD);
-%% this section plots the result of the full system response and linear analytical
-% figure
-% plot(w,outputPSD(1,:),'linewidth',1)
-% hold on
-% plot(w,linear_analytic(n,:),'linewidth',2)
-% xlim([0,15])
-% xlabel('\Omega frequency')
-% ylabel('Power Density')
-% legend(strcat('PSD solved by ', ": ",method), 'linear analytic')
-% legend('boxoff')
-% title('Power Spectral Density of X1')
-% grid on
+
 
 %% SSM setting
 S = SSM(SS);
@@ -55,17 +44,29 @@ set(S.Options, 'reltol', 0.1,'notation','multiindex')
 masterModes = [1,2];
 S.choose_E(masterModes);
 order = 5; % SSM approximation order
-%%
 
-ssmPSD=S.extract_PSD(PSDpair, order,"filter");
-% %%
-% figure
-% plot(ssmPSD.omega,ssmPSD.PSD,'linewidth',1,'DisplayName','SSM')
+ssmPSD=S.compute_ssmPSD(PSDpair, order,"filter");
+
+%% this section plots the result
+figure
+plot(w,outputPSD(1,:),'linewidth',1)
+hold on
+plot(w,linear_analytic(n,:),'linewidth',2)
+xlim([0,15])
+xlabel('\Omega frequency')
+ylabel('Power Density')
+legend(strcat('PSD solved by ', ": ",method), 'linear analytic')
+legend('boxoff')
+title('Power Spectral Density of X1')
+grid on
+
+figure
+plot(ssmPSD.omega,ssmPSD.PSD,'linewidth',1,'DisplayName','SSM')
+hold on
+plot(w,outputPSD(1,:),'linewidth',1,'DisplayName','Full System Simulation')
 % hold on
-% plot(w,outputPSD(1,:),'linewidth',1,'DisplayName','Full System Simulation')
-% % hold on
-% % plot(w,linear_analytic(n,:),'linewidth',1,'DisplayName','linear analytic')
-% % xline(firts_res,'-',{'First Resonance'},'linewidth',1.5);
-% legend
-% xlim([0,10]);
-% grid on
+% plot(w,linear_analytic(n,:),'linewidth',1,'DisplayName','linear analytic')
+% xline(firts_res,'-',{'First Resonance'},'linewidth',1.5);
+legend
+xlim([0,10]);
+grid on

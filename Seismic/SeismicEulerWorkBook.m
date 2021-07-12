@@ -27,10 +27,10 @@ method="filter ImplicitMidPoint";
 PSDpair=[n,n];
 %%
 [V, D, W] = SS.linear_spectral_analysis();
-clusterRun=true;
+clusterRun=false;
 %%
 tic
-[w,outputPSD] = SS.monte_carlo_average(method,PSDpair,nRealization,clusterRun);
+[w,outputPSD] = SS.sde_solver(method,PSDpair);
 time_sde=toc;
 disp(['Total number of ',num2str(nRealization),'# takes ',...
     num2str(time_sde),' amount of time'])
@@ -44,4 +44,4 @@ masterModes = [1,2];
 S.choose_E(masterModes);
 order = 5; % SSM approximation order
 
-ssmPSD=S.extract_PSD(PSDpair, order,"filter",clusterRun);
+ssmPSD=S.compute_ssmPSD(PSDpair, order,"filter",clusterRun);
