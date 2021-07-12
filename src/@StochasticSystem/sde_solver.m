@@ -82,6 +82,7 @@ Cy = zeros(nPSDpairs,N+1);
         obj.input.PSD=obj.samplePSD(1,:);
     end
 end
+
 function [w,Gxy]=crossPSDestimator(x,y,t)
 %%% Reference: Preunont Andre, Random vibration and Spectral Analysis Chp 12.9
 %%%% numebr of sampling points 

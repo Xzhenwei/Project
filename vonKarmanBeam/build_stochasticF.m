@@ -14,6 +14,6 @@ PSD1 = epsilon^2 * 50 ./ (omega.^5) .* exp(-400./(omega.^4)) ; PSD1(1) = 0;
 
 samplePSD=[PSD1;omega];
 
-forcingDof=[1];
+forcingDof=1;
 
 stochastic_f=true; % automatically to be true unless specified

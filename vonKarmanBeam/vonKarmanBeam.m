@@ -20,7 +20,7 @@ DS = DynamicalSystem();
 SS = StochasticSystem();
 
 set(SS,'filterPSD',filterPSD,'linear',false)
-set(SS,'M',M,'C',C,'K',K,'fnl',fnl,'n',n);
+set(SS,'M',M,'C',C,'K',K,'fnl',fnl);
 set(SS.Options,'Emax',5,'Nmax',10,'notation','multiindex')
 SS.add_random_forcing(nRealization, T0, nPoints,forcingdof);
 

@@ -84,7 +84,7 @@ classdef StochasticSystem < DynamicalSystem
         
         linear_analytic=compute_linear_PSD(obj,omega,PSD)
         
-        [w_a,PSD_a] = monte_carlo_average(obj,method,PSDpair,nRealization)
+        [w,PSD] = monte_carlo_average(obj,method,PSDpair,nRealization,clusterRun)
         %%% SSM
 %         PSD = extract_PSD(obj, parRange, order, method)
 %         

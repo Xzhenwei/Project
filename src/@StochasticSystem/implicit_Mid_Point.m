@@ -114,7 +114,7 @@ function [X,V]=implicit_Mid_Point(obj,N,T0,PSD)
     xhat=qhat(m+1:end);xdhat=qdhat(m+1:end);
     fnl_hat=[sparse(m,1); obj.compute_fnl(xhat,xdhat)];
     qd(:,i+1)=qd(:,i)-M\(C*qdhat+K*qhat+fnl_hat)*detT+M\dW;
-    disp(['time integration completed: ', num2str(i/N*100), '%'])    
+%     disp(['time integration completed: ', num2str(i/N*100), '%'])    
     end
 
 X=q(m+1:end,:); V=qd(m+1:end,:);

@@ -45,7 +45,7 @@ for i=1:N
     
     %% update
 
-    disp(['time integration completed: ', num2str(i/N*100), '%'])    
+%     disp(['time integration completed: ', num2str(i/N*100), '%'])    
 end
 
 end
