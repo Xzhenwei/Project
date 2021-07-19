@@ -4,6 +4,9 @@ function [M,C,K,fnl] = build_model(n,m,c,k,kappa2,kappa3)
 %%
 % One end fixed Boundary condition
 
+%%% double check
+
+
 K = K(3:n+2,3:n+2); 
 C = C(3:n+2,3:n+2); 
 M = m*speye(n,n);

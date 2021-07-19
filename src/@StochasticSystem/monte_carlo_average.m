@@ -15,6 +15,9 @@ if nRealization>1
         [~,outputPSD] = obj.sde_solver(method,PSDpair);
         X = X+outputPSD;
     end
+    
+    
+    
     PSD_a = X/nRealization;
 
 

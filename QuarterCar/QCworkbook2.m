@@ -3,7 +3,7 @@ n=2; kappa=200;
 kappa=0;
 [M,C,K,fnl,f_0] = build_model(kappa,n);
 % LINEAR QUARTER CAR with Dimension 2;
-nRealization=1;
+nRealization=10;
 T0=100; %% PSD frequency domain resolution is ~ 1/T0
 nPoints=2^13; %% control the accuracy of numerical differential equation
 epsilon=1000; %% forcing magnitude
@@ -23,14 +23,14 @@ clusterRun=false; %% if the script is run on local or cluster.
 method="filter ImplicitMidPoint";
 PSDpair=[n,n];
 %%
-[w,outputPSD] = SS.sde_solver(method,PSDpair);
+[w,outputPSD] = SS.monte_carlo_average(method,PSDpair,nRealization,clusterRun);
 %%
 linear_analytic=SS.compute_linear_PSD(SS.input.omega,SS.input.PSD);
 %% this section plots the result of the full system response and linear analytical
 figure
 plot(w,outputPSD(1,:),'linewidth',1)
 hold on
-plot(w,linear_analytic(1,:),'linewidth',2)
+plot(w,linear_analytic(PSDpair(1),:),'linewidth',2)
 hold on
 xlim([0,15])
 xlabel('\Omega frequency')
@@ -49,11 +49,12 @@ order = 5; % SSM approximation order
 [wss,ssmPSD]=S.compute_ssmPSD(PSDpair, order,"filter",clusterRun);
 %%
 figure
-plot(wss,ssmPSD,'linewidth',1)
+plot(wss,ssmPSD,'linewidth',1,'DisplayName','SSM')
 hold on
-plot(w,outputPSD(1,:),'linewidth',1)
+plot(w,outputPSD(1,:),'linewidth',1,'DisplayName','Full System Simulation')
 hold on
-plot(w,linear_analytic(1,:),'linewidth',1)
-legend('SSM','nonlinear simulation','linear analytic')
+plot(w,linear_analytic(PSDpair(1),:),'linewidth',1,'DisplayName','linear analytic')
+% xline(firts_res,'-',{'First Resonance'},'linewidth',1.5);
+legend
 xlim([0,20]);
 grid on

@@ -7,25 +7,6 @@ dim = obj.n;
 % initial conditions are set to be 0
 X0 = zeros(dim,1); V0 = X0;
 
-    if ~isempty(obj.filterPSD)
-        PSD = obj.filterPSD;
-        Mz = PSD.Mz;
-        Cz = PSD.Cz;
-        Kz = PSD.Kz;
-        WhiteNoise_S = PSD.S;
-        StochasticRealization = "indirect";
-
-    elseif ~isempty(obj.samplePSD)
-       
-       StochasticRealization= "direct";
-       
-    else
-        error('please specify an input PSD')
-        
-    end
-
-
-
 %%
 %%% initialization for output PSD
 % SpecDensPair format ie: [1,1;2,2;3,3]
@@ -35,19 +16,23 @@ Cy = zeros(nPSDpairs,N+1);
         % SDE
             switch SDEmethod
                 case "filter ImplicitMidPoint"
+                    PSD = obj.filterPSD;
+                    Mz = PSD.Mz;
+
                     G=zeros(obj.n,length(Mz)); %G(end,:)=ones(1,length(Mz));
                     PSD.G=G;
                     [X,V]=implicit_Mid_Point(obj,N,T0,PSD);
                 case "filterHeun"
             %Forward Heun's method
-                    obj.Fsto = generate_stochastic(obj,StochasticRealization);
-
+                    obj.Fsto = obj.generate_stochastic();
+                    PSD = obj.filterPSD;
+                    Mz = PSD.Mz;
                     G=zeros(obj.n,length(Mz)); %G(end,:)=ones(1,length(Mz));
                     PSD.G=G;
                     [X,V]=forward_Heun(obj,N,T0,PSD);
             % Newmark method
                 case "Newmark"
-                    obj.Fsto = generate_stochastic(obj,StochasticRealization);
+                    obj.Fsto = obj.generate_stochastic();
                     
                     A0=zeros(dim,1);
                     TI_sto = ImplicitNewmark('timestep',detT,'alpha',0.005,'linear',obj.linear);
@@ -65,22 +50,6 @@ Cy = zeros(nPSDpairs,N+1);
         end
         
         outputPSD=Cy;
-    
-    if StochasticRealization== "indirect"
-        Z11 = zeros(1, N+1);
-        Phi_F = zeros(length(Mz), length(Mz));
-        for j = 1:N + 1
-         Hw = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz)*1i*w(j);
-         Phi_F(end,end) = WhiteNoise_S;
-         Zj=Hw*Phi_F*Hw.';
-         Z11(j)=norm(Zj(1,1)); %% this is the input analytical signal/process
-        end
-        obj.input.omega=w;
-        obj.input.PSD=Z11; %% we store the input signal as the last row in outputPSD
-    else
-        obj.input.omega=obj.samplePSD(2,:);
-        obj.input.PSD=obj.samplePSD(1,:);
-    end
 end
 
 function [w,Gxy]=crossPSDestimator(x,y,t)

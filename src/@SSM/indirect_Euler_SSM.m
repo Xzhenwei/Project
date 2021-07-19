@@ -5,7 +5,8 @@ maxiter=1000; tol=1e-8;
 detT=T0/N;
 n=obj.System.n;
 M=PSD.Mz;  C=PSD.Cz;   K=PSD.Kz;   S=PSD.S; sigma=sqrt(S*2*pi); %variance
-PSD.G(n,1)=1; Gs=[PSD.G;zeros(n,f)];
+PSD.G(obj.System.forcingdof,1)=1;
+Gs=[PSD.G;zeros(n,f)];
 z=zeros(f,N+1); v=zeros(f,N+1); p=zeros(m,N+1);
 q=[z;v;p]; 
 dW=zeros(f+f+m,1); 
