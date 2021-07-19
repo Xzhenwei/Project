@@ -1,4 +1,4 @@
-function [M,C,K,fnl,fext, outdof] = build_model(nElements)
+function [M,C,K,fnl, outdof] = build_model(nElements)
 %% Finite Element Setup
 % Geometry
 startLIN = tic;
@@ -73,20 +73,22 @@ v1 = reshape(V(:,mod),3,[]);
 % title(['Mode ' num2str(mod) ', Frequency = ' num2str(omega(mod)/(2*pi)) ' Hz'] )
 
 %% external force assembly
-disp('Assembling external force vector')
 
-outnode = MyMesh.nNodes;
+outnode = 1;
 outdof = outnode*3-1; % transverse direction
+disp(['Assigning external force vector at ',num2str(outnode),'th element in transverse direction'])
+% 2
+% outdof
 
-outdofvec = sparse(outdof,ones(size(outdof)),1,MyMesh.nDOFs,1);
-outdofvec = MyAssembly.constrain_vector(outdofvec);
-outdof = find(outdofvec);
+% outdofvec = sparse(outdof,ones(size(outdof)),1,MyMesh.nDOFs,1);
+% outdofvec = MyAssembly.constrain_vector(outdofvec);
+% outdof = find(outdofvec);
 
 % fext = outdofvec;
 
 
-weights = true(nElements,1); 
-fext = MyAssembly.constrain_vector(MyAssembly.uniform_body_force('weights',weights));
+% weights = true(nElements,1); 
+% fext = MyAssembly.constrain_vector(MyAssembly.uniform_body_force('weights',weights));
 
 
 computationTimeLIN = toc(startLIN);

@@ -5,13 +5,16 @@ maxiter=1000; tol=1e-8;
 detT=T0/N;
 n=obj.System.n;
 M=PSD.Mz;  C=PSD.Cz;   K=PSD.Kz;   S=PSD.S; sigma=sqrt(S*2*pi); %variance
-PSD.G(n,1)=1; Gs=[PSD.G;zeros(n,f)];
+PSD.G(obj.System.forcingdof,1)=1;
+Gs=[PSD.G;zeros(n,f)];
 z=zeros(f,N+1); v=zeros(f,N+1); p=zeros(m,N+1);
 q=[z;v;p]; 
 dW=zeros(f+f+m,1); 
 
+display = obj.ssmSEulerTimeDisp;
+
 for i=1:N
-    
+
     detu=sigma*randn*sqrt(detT);  dW(2*f)=detu; 
     error1 = 1e8;
     iter = 0;
@@ -22,12 +25,12 @@ for i=1:N
     
         F=[z(:,i+1)-v(:,i+1)*detT-z(:,i);...
         (M+C*detT)*v(:,i+1)+K*z(:,i+1)*detT-M*v(:,i);...
-        p(:,i+1)-expand_coefficients(R0,m, p(:,i+1))*detT-Wnode*Gs*z(:,i+1)*detT-p(:,i)]...
+        p(:,i+1)-expand_coefficients(R0,m, p(:,i+1))*detT-Wnode*Gs*v(:,i+1)*detT-p(:,i)]...
         -dW;
     
         Jp = compute_J_R0(R0,m, p(:,i+1));
        
-        J= [eye(f),-eye(f)*detT ,zeros(m,m);K*detT,M+C*detT,zeros(m,m);-Wnode*Gs*detT,zeros(f,f),eye(m)-Jp*detT];
+        J= [eye(f),-eye(f)*detT ,zeros(m,m);K*detT,M+C*detT,zeros(m,m);zeros(f,f),-Wnode*Gs*detT,eye(m)-Jp*detT];
         y = -J\F;  % solve the linear equations
         q(:,i+1) = q(:,i+1) + y;
  
@@ -45,7 +48,9 @@ for i=1:N
     
     %% update
 
-%     disp(['time integration completed: ', num2str(i/N*100), '%'])    
+    if display
+        disp(['time integration completed: ', num2str(i/N*100), '%']) 
+    end
 end
 
 end

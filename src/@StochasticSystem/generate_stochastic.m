@@ -1,4 +1,4 @@
-function [Fstochastic] = generate_stochastic(obj,method)
+function [Fstochastic] = generate_stochastic(obj)
 %%% description: generate one particular realization, time history...
     % This function generates one particular sequence of random process on a given time
     % span. There are two ways, one is to generate the realization directly
@@ -15,23 +15,26 @@ function [Fstochastic] = generate_stochastic(obj,method)
     % are deposited in the object's property 'samplePSD'. When the method
     % is indirect, the input should include linear system's parameters: M C
     % K matrices as well as the white noise magnitude.
+
+    %%%%% note that forcing degree of freedom is essential for finite
+    %%%%% element method
     
 dim=obj.n;
 T0=obj.timeSpan;
 N=obj.nPoints;
 forcingdof=obj.forcingdof;
-    switch method
-        case "indirect"
-            PSD=obj.filterPSD;
-            M=PSD.Mz;
-            C=PSD.Cz;
-            K=PSD.Kz;
-            WhiteNoise_S=PSD.S;
-            T=linspace(0,T0,N+1);obj.timevector = T;
-            m=length(M);
+    switch obj.SSOptions.ssMethod
+        case 'indirect'
+            PSD = obj.filterPSD;
+            M = PSD.Mz;
+            C = PSD.Cz;
+            K = PSD.Kz;
+            WhiteNoise_S = PSD.S;
+            T = linspace(0,T0,N+1); obj.timevector = T;
+            m = length(M);
             % SDE method
-                Z1=zeros(m,N+1);
-                Z2=zeros(m,N+1);
+                Zx=zeros(m,N+1);
+                Zv=zeros(m,N+1);
                 % sub functions generating forcing realizations/ also forcing
                 % directly from PSD
                 sigma=sqrt(WhiteNoise_S*2*pi); % variance of white noise with intensity S
@@ -43,24 +46,24 @@ forcingdof=obj.forcingdof;
                 dW(end)=detu;
                 
                 
-                Z1hat = (M+1/2*C*detT+1/4*K*detT^2)\((M+1/2*C*detT)*...
-                    Z1(:,i)+1/2*detT*(M*Z2(:,i)+1/2*dW));
-                Z2hat=(M+1/2*C*detT)\(M*Z2(:,i)-1/2*detT*K*Z1hat+1/2*dW);
+                Zxhat = (M+1/2*C*detT+1/4*K*detT^2)\((M+1/2*C*detT)*...
+                    Zx(:,i)+1/2*detT*(M*Zv(:,i)+1/2*dW));
+                Zvhat=(M+1/2*C*detT)\(M*Zv(:,i)-1/2*detT*K*Zxhat+1/2*dW);
                 
                 % update
-                Z1(:,i+1)=Z1(:,i)+detT*Z2hat;
-                Z2(:,i+1)=Z2(:,i)-M\(C*Z2hat*detT+...
-                    K*Z1hat*detT-dW);
+                Zx(:,i+1)=Zx(:,i)+detT*Zvhat;
+                Zv(:,i+1)=Zv(:,i)-M\(C*Zvhat*detT+...
+                    K*Zxhat*detT-dW);
                 
             end
                 % assigning stochastic force
                 Fext=zeros(dim,N+1);
                 for j=1:length(forcingdof)
                     l=forcingdof(j);  
-                    Fext(l,:)=Z1(1,:);
+                    Fext(l,:)=Zv(1,:); % taking velocity
                 end
                 %%%
-        case "direct" %% need Phi and omega vectors
+        case 'direct' %% need Phi and omega vectors
             samplePSD=obj.samplePSD;
             Phi=samplePSD(1,:);
             omega=samplePSD(2,:);

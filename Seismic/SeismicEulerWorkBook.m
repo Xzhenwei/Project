@@ -44,4 +44,4 @@ masterModes = [1,2];
 S.choose_E(masterModes);
 order = 5; % SSM approximation order
 
-ssmPSD=S.extract_PSD(PSDpair, order,"filter",clusterRun);
+[wss,ssmPSD]=S.compute_ssmPSD(PSDpair, order,"filter",clusterRun);

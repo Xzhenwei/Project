@@ -5,6 +5,8 @@ classdef SSM < Manifold
     properties
        contOptions = cocoOptions();
        FRCOptions = FRCOptions();
+       
+       ssmSEulerTimeDisp = true;
     end
     
     methods
@@ -21,6 +23,8 @@ classdef SSM < Manifold
         p = indirect_Euler_SSM(obj, N,T0,PSD,f,m,Wnode,R0)
         
         [w,Gzz] = compute_ssmPSD(obj, PSDpair, ORDER, method,clusterRun)
+        
+        [wss,Gss] = extract_PSD(obj, PSDpair, W0, R0, method)
     end
 end
 

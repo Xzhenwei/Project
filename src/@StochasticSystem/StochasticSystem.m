@@ -19,14 +19,10 @@ classdef StochasticSystem < DynamicalSystem
         
         Fsto = [] % an vector of stochastic forcing realization
 
+        SSOptions = SSOptions()
     end
     
-%     properties (SetAccess = private)        
-%         solInfo = struct('memoryEstimate', [], 'timeEstimate', []) 
-%         % This data structure stores the solution information:
-%         % memory consumption estimate in MB at each order
-%         % computational time estimate in seconds at each order
-%     end
+
 
     methods
         %% Constructor
@@ -49,16 +45,7 @@ classdef StochasticSystem < DynamicalSystem
 %             N = obj.System.N;
 %         end
 %         
-%         function M = get.dimManifold(obj)
-%             M = 0;
-%             if ~isempty(obj.E)
-%                 M = M + size(obj.E.basis,2);
-%             end
-%             
-%             if ~isempty(obj.N)
-%                 M = M + numel(obj.N.Omega);
-%             end
-%         end
+
         
         %% other methods
         function add_random_forcing(obj,nRealization,timeSpan,nPoints,forcingdof)
@@ -73,7 +60,7 @@ classdef StochasticSystem < DynamicalSystem
         [r, drdqdd,drdqd,drdq, c0] = residual(obj, q, qd, qdd, t)
         
         %%% stochastic methods
-        [F_sto] = generate_stochastic(obj,method)
+        [F_sto] = generate_stochastic(obj)
         fst = compute_fstochastic(obj,t)
         
         [X,V]=forward_Heun(obj,X0,V0,N,T0,PSD)
@@ -85,6 +72,8 @@ classdef StochasticSystem < DynamicalSystem
         linear_analytic=compute_linear_PSD(obj,omega,PSD)
         
         [w,PSD] = monte_carlo_average(obj,method,PSDpair,nRealization,clusterRun)
+        
+        input_PSD(obj)
         %%% SSM
 %         PSD = extract_PSD(obj, parRange, order, method)
 %         
