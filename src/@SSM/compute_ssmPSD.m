@@ -4,7 +4,7 @@ obj.System.input_PSD();
 
 nRealization = obj.System.nRealization;
 
-Gs=zeros(numel(ORDER),obj.System.nPoints);
+Gs=zeros(numel(ORDER),obj.System.nPoints+1);
 
 for j = 1:numel(ORDER)
     order = ORDER(j);
