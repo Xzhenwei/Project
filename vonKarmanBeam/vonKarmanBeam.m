@@ -2,13 +2,13 @@
 % *system parameters*
 
 nElements = 10;
-epsilon = 10;
+epsilon = 1;
 %% generate model
 
 [M,C,K,fnl,outdof] = build_model(nElements);
 n = length(M);
 %%%
-nRealization=1;
+nRealization=10;
 T0=100; %% PSD frequency domain resolution is ~ 1/T0
 nPoints=2^14; %% control the accuracy of numerical differential equation
 % epsilon=1000; %% forcing magnitude
@@ -45,7 +45,7 @@ order = 5; % SSM approximation order
 %%
 [wss,ssmPSD]=S.compute_ssmPSD(PSDpair, order,"filt",clusterRun);
 %%
-[wss,ssmPSD]=S.extract_PSD(PSDpair, order,"filt");
+% [wss,ssmPSD]=S.extract_PSD(PSDpair, order,"filt");
 %%
 linear_analytic=SS.compute_linear_PSD(SS.input.omega,SS.input.PSD);
 %%
@@ -54,7 +54,7 @@ plot(wss,ssmPSD,'linewidth',1,'DisplayName','SSM')
 hold on
 plot(w,outputPSD(1,:),'linewidth',1,'DisplayName','Full System Simulation')
 hold on
-plot(w,linear_analytic(n,:),'linewidth',1,'DisplayName','linear analytic')
+% plot(w,linear_analytic(n,:),'linewidth',1,'DisplayName','linear analytic')
 % % xline(firts_res,'-',{'First Resonance'},'linewidth',1.5);
 legend
 xlim([0,10]);

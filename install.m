@@ -27,9 +27,10 @@ addpath(fullfile(maindir, 'src', 'frc'));
 
 addpath(fullfile(maindir, 'QuarterCar'));
 addpath(fullfile(maindir, 'Seismic'));
+addpath(fullfile(maindir, 'vonKarmanBeam'));
 
-% run SeismicEulerWorkBook.m
-% save('workspace.mat')
+run vonKarmanEuler.m
+save('workspaceVonKarman.mat')
 end
 
 
