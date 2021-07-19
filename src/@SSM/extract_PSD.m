@@ -1,4 +1,4 @@
-function [omega,outputPSD] = extract_PSD(obj, PSDpair, ORDER, method)
+function [omega,outputPSD] = extract_PSD(obj, PSDpair, W0, R0, method)
 %  EXTRACT_FRC This function extracts the power spectral density (PSD) for
 %  systems under stochastic forcing. The PSD computation is based
 %  on SSM computation. An appropriate SSM is constructed based on the
@@ -13,14 +13,15 @@ function [omega,outputPSD] = extract_PSD(obj, PSDpair, ORDER, method)
 % order=[3 5];
 % for j = 1:numel(ORDER)
 %     order = ORDER(j);  % SSM approximation order
-order = ORDER;
-[W0, R0] = obj.compute_whisker(order);
+% order = ORDER;
+% [W0, R0] = obj.compute_whisker(order);
 %% computation of the reduced dynamics
 m = obj.dimManifold; 
 
 % the resolution of solving 2-dim system is higher than original system in
 % order to capture the high frequency information
-num_points=obj.System.nPoints*2^3;
+num_points = obj.System.nPoints*2^2; % 3 when filter was used.
+
 T=obj.System.timeSpan;
 p0 = zeros(m,1);
 
@@ -33,7 +34,6 @@ n=obj.System.n;
 
 
 %% backward euler
-for l=1:1
 
 %% indirect filter method
 switch lower(method)
@@ -42,7 +42,7 @@ switch lower(method)
         Mz=PSD.Mz;
         PSD.G=zeros(n,length(Mz)); %G(end,:)=ones(1,length(Mz));
         f=length(Mz);
-        p=obj.indirect_Euler_SSM(num_points,T,PSD,f,m,Wnode,R0);
+        p=indirect_Euler_SSM(obj, num_points,T,PSD,f,m,Wnode,R0);
 
         z=zeros(2*n,length(p));
         for i=1:length(p)
@@ -69,9 +69,7 @@ switch lower(method)
         [w,Gz]=crossPSDestimator(z(PSDpair(1),:),z(PSDpair(2),:),t_45);
         Gzz=Gzz+Gz;
 end
-%% calculate full system PSD       
-
-end
+%% calculate full system PSD
 
 Gzz=Gzz/MontCarlo;
 
@@ -116,8 +114,10 @@ for k = 1:length(S0)
 end
 % add nonautonomous contribution
     S = S + U * [obj.System.compute_fstochastic(t); zeros(obj.System.n,1)];
+    if obj.ssmSEulerTimeDisp
     disp(['Integration completed: ', num2str(t/T*100),...
         '%, and reamaining number of Monte Carlo simulation: ', num2str(nMonte)])
+    end
 end
 
 function S = expand_autonomous(W0,n, p)

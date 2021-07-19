@@ -11,6 +11,8 @@ z=zeros(f,N+1); v=zeros(f,N+1); p=zeros(m,N+1);
 q=[z;v;p]; 
 dW=zeros(f+f+m,1); 
 
+display = obj.ssmSEulerTimeDisp;
+
 for i=1:N
 
     detu=sigma*randn*sqrt(detT);  dW(2*f)=detu; 
@@ -46,7 +48,9 @@ for i=1:N
     
     %% update
 
-%     disp(['time integration completed: ', num2str(i/N*100), '%'])    
+    if display
+        disp(['time integration completed: ', num2str(i/N*100), '%']) 
+    end
 end
 
 end

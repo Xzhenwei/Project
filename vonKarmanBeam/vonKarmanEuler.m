@@ -1,6 +1,6 @@
 
 nElements = 10;
-epsilon = 3;
+epsilon = 1e-2;
 
 [M,C,K,fnl,outdof] = build_model(nElements);
 n = length(M);
@@ -39,7 +39,7 @@ masterModes = [1,2];
 S.choose_E(masterModes);
 order = 5; % SSM approximation order
 %%
+S.ssmSEulerTimeDisp=false;
 [wss,ssmPSD]=S.compute_ssmPSD(PSDpair, order,"",clusterRun);
 %%
 linear_analytic=SS.compute_linear_PSD(SS.input.omega,SS.input.PSD);
-
