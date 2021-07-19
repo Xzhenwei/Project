@@ -26,6 +26,7 @@ PSDpair=[n,n];
 %%
 [V, D, W] = SS.linear_spectral_analysis();
 %%
+SS.sdeImpTimeDisp = false;
 tic
 [w,outputPSD] = SS.monte_carlo_average(method,PSDpair,nRealization,clusterRun);
 time_sde=toc;

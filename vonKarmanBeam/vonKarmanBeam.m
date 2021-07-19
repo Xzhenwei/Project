@@ -48,7 +48,7 @@ order = 5; % SSM approximation order
 linear_analytic=SS.compute_linear_PSD(SS.input.omega,SS.input.PSD);
 %%
 figure
-plot(wss,ssmPSD,'linewidth',1,'DisplayName','SSM')
+plot(wss,ssmPSD.PSD,'linewidth',1,'DisplayName','SSM')
 hold on
 plot(w,outputPSD(1,:),'linewidth',1,'DisplayName','Full System Simulation')
 hold on
