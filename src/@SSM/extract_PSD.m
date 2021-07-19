@@ -57,7 +57,7 @@ switch lower(method)
 
 %     %% ODE45 solver
 %         detT=T/num_points*4; t=0:detT:T;
-        f_p=@(t,p) expand_DE(obj,R0,Wnode,m,t, p,MontCarlo-l,T);
+        f_p=@(t,p) expand_DE(obj,R0,Wnode,m,t, p,MontCarlo-1,T);
         opts = odeset('RelTol',1e-9,'AbsTol',1e-9);
         t_span = t;
         [t_45,p_45] = ode45(f_p,t_span ,p0, opts);
