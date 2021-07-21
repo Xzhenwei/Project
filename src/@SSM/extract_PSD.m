@@ -17,7 +17,7 @@ function [omega,outputPSD] = extract_PSD(obj, PSDpair, W0, R0, method)
 % [W0, R0] = obj.compute_whisker(order);
 %% computation of the reduced dynamics
 m = obj.dimManifold; 
-
+%%% 
 % the resolution of solving 2-dim system is higher than original system in
 % order to capture the high frequency information
 num_points = obj.System.nPoints*2^2; % 3 when filter was used.

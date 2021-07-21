@@ -52,10 +52,11 @@ C = MyAssembly.damping_matrix();
 
 %% apply boundary conditions
 disp('Applying boundary conditions')
-MyMesh.set_essential_boundary_condition(1,[1 2 3],0) % Cantilevered beam
+MyMesh.set_essential_boundary_condition(1,[1 ],0) % Cantilevered beam
+%%% remove above line, add a linear spring to the first node. fixed the 1th dof
 M = MyAssembly.constrain_matrix(M);
-K = MyAssembly.constrain_matrix(K);
-C = MyAssembly.constrain_matrix(C);
+K = MyAssembly.constrain_matrix(K); % K(1:3,1:3)=K(1:3,1:3)+Kl, Kl=3x3;
+C = MyAssembly.constrain_matrix(C); 
 
 
 
