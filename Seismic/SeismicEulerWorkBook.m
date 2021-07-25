@@ -33,7 +33,6 @@ tic
 time_sde=toc;
 disp(['Total number of ',num2str(nRealization),'# realization takes ',...
     num2str(time_sde),' amount of time'])
-%%
 
 %% SSM setting
 S = SSM(SS);
@@ -41,6 +40,8 @@ set(S.Options, 'reltol', 0.1,'notation','multiindex')
 masterModes = [1,2];
 S.choose_E(masterModes);
 order = 5; % SSM approximation order
+%%
+S.ssmSEulerTimeDisp = false;
 %%
 tic
 [wss,ssmPSD]=S.extract_PSD(PSDpair, order,'fil',clusterRun);
