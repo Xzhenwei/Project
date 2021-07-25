@@ -1,4 +1,4 @@
-function [M,C,K,fnl, outdof, eMass] = build_model(nElements)
+function [M,C,K,fnl, outdof] = build_model2(nElements)
 %% Finite Element Setup
 % Geometry
 startLIN = tic;
@@ -14,7 +14,7 @@ E       = 70e9;  % 70e9 % 200e9 % Young's modulus
 rho     = 2700; % 2700 % 7850 % density
 nu      = 0.3;    % nu
 kappa   = 1e7; % material damping modulus 1e8
-eMass   = l*b*h*rho;
+
 %% FE model
 disp('Building FE model')
 % Material
@@ -53,7 +53,6 @@ C = MyAssembly.damping_matrix();
 %% apply boundary conditions
 disp('Applying boundary conditions')
 MyMesh.set_essential_boundary_condition(1,[1 3],0) % Cantilevered beam
-MyMesh.set_essential_boundary_condition(1,[1 2 3],0) 
 %%% remove above line, add a linear spring to the first node. fixed the 1th dof
 M = MyAssembly.constrain_matrix(M);
 K = MyAssembly.constrain_matrix(K); % K(1:3,1:3)=K(1:3,1:3)+Kl, Kl=3x3;
