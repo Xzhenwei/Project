@@ -60,7 +60,7 @@ forcingdof=obj.forcingdof;
                 Fext=zeros(dim,N+1);
                 for j=1:length(forcingdof)
                     l=forcingdof(j);  
-                    Fext(l,:)=Zv(1,:); % taking velocity
+                    Fext(l,:)= obj.gFactor*Zv(1,:); % taking velocity
                 end
                 %%%
         case 'direct' %% need Phi and omega vectors

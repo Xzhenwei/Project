@@ -6,7 +6,7 @@ function [X,V]=implicit_Mid_Point(obj,N,T0,PSD)
     Cz=PSD.Cz;
     Kz=PSD.Kz;
     S=PSD.S;
-    G= PSD.G;   G(obj.forcingdof,1)=1;
+    G= PSD.G;   
     m=length(Mz);
     detT=T0/N;  %T=linspace(0,T0,N+1);
     

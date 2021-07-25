@@ -29,8 +29,8 @@ addpath(fullfile(maindir, 'QuarterCar'));
 addpath(fullfile(maindir, 'Seismic'));
 addpath(fullfile(maindir, 'vonKarmanBeam'));
 
-run vonKarmanEuler.m
-save('workspaceVonKarman.mat')
+run SeismicEulerWorkBook.m
+save('workspaceSeismic.mat')
 end
 
 

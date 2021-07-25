@@ -17,18 +17,12 @@ Cy = zeros(nPSDpairs,N+1);
             switch SDEmethod
                 case "filter ImplicitMidPoint"
                     PSD = obj.filterPSD;
-                    Mz = PSD.Mz;
-
-                    G=zeros(obj.n,length(Mz)); %G(end,:)=ones(1,length(Mz));
-                    PSD.G=G;
-                    [X,V]=implicit_Mid_Point(obj,N,T0,PSD);
+                    [X,V] = implicit_Mid_Point(obj,N,T0,PSD);
                 case "filterHeun"
             %Forward Heun's method
                     obj.Fsto = obj.generate_stochastic();
                     PSD = obj.filterPSD;
-                    Mz = PSD.Mz;
-                    G=zeros(obj.n,length(Mz)); %G(end,:)=ones(1,length(Mz));
-                    PSD.G=G;
+
                     [X,V]=forward_Heun(obj,N,T0,PSD);
             % Newmark method
                 case "Newmark"

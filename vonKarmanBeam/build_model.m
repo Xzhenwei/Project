@@ -34,8 +34,8 @@ elements = [1:nNodes-1;2:nNodes].';
 MyMesh = Mesh(nodes);
 MyMesh.create_elements_table(elements,myElementConstructor);
 
-% Plot mesh
-% figure('Name','Mesh'); PlotMesh(nodes,elements,0);
+Plot mesh
+figure('Name','Mesh'); PlotMesh(nodes,elements,0);
 
 %% Assemble linear stiffness, mass and damping
 disp('Assembling M,C,K matrices')
@@ -69,9 +69,9 @@ omega = sqrt(diag(omega2));
 V = MyAssembly.unconstrain_vector(V0);
 mod = 1;
 v1 = reshape(V(:,mod),3,[]);
-% figure;
-% PlotFieldonDeformedMesh(nodes,elements,v1(1:2,:).','factor',0.2);
-% title(['Mode ' num2str(mod) ', Frequency = ' num2str(omega(mod)/(2*pi)) ' Hz'] )
+figure;
+PlotFieldonDeformedMesh(nodes,elements,v1(1:2,:).','factor',0.2);
+title(['Mode ' num2str(mod) ', Frequency = ' num2str(omega(mod)/(2*pi)) ' Hz'] )
 
 %% external force assembly
 

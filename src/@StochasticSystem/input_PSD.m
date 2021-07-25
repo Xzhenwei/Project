@@ -10,15 +10,15 @@ switch obj.SSOptions.ssMethod
         Mz = PSD.Mz;
         Cz = PSD.Cz;
         Kz = PSD.Kz;
-        WhiteNoise_S = PSD.S;
-        
+        S = PSD.S;
+        G = PSD.G;
         Z11 = zeros(1, N+1);
-        Phi_F = zeros(length(Mz), length(Mz));
+
         for j = 1:N + 1
          Hw = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz)*w(j)*1i; %% taking the velocity of the auxilliary system
-         Phi_F(end,end) = WhiteNoise_S;
+         Phi_F = G*G'*S;
          Zj=Hw*Phi_F*Hw.';
-         Z11(j)=norm(Zj(1,1)); %% this is the input analytical signal/process
+         Z11(j)=abs(Zj(1,1)); %% this is the input analytical signal/process
         end
         obj.input.omega=w;
         obj.input.PSD=Z11; %% we store the input signal as the last row in outputPSD
@@ -27,7 +27,7 @@ switch obj.SSOptions.ssMethod
        
         obj.input.omega=obj.samplePSD(2,:);
         obj.input.PSD=obj.samplePSD(1,:);
-       
+        
     otherwise
         error('please specify an input PSD')
         

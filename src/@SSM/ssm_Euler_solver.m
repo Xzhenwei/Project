@@ -1,12 +1,12 @@
-function p=indirect_Euler_SSM(obj, N,T0,PSD,f,m,Wnode,R0) %% change the name 
+function p=ssm_Euler_solver(obj, N,T0,PSD,f,m,Wnode,R0) %% change the name 
     % l is the dim of manifold, n is dim of system, f= dim of filter;
-maxiter=1000; tol=1e-8;
+maxiter=1000; tol=1e-9;
 
 detT=T0/N;
 n=obj.System.n;
 M=PSD.Mz;  C=PSD.Cz;   K=PSD.Kz;   S=PSD.S; sigma=sqrt(S*2*pi); %variance
-PSD.G(obj.System.forcingdof,1)=1;
-Gs=[PSD.G;zeros(n,f)];
+
+Gs=[PSD.G;zeros(n,f)]; %Gs=[Gs,zeros(2*n,1)];
 z=zeros(f,N+1); v=zeros(f,N+1); p=zeros(m,N+1);
 q=[z;v;p]; 
 dW=zeros(f+f+m,1); 
@@ -30,7 +30,7 @@ for i=1:N
     
         Jp = compute_J_R0(R0,m, p(:,i+1));
        
-        J= [eye(f),-eye(f)*detT ,zeros(m,m);K*detT,M+C*detT,zeros(m,m);zeros(f,f),-Wnode*Gs*detT,eye(m)-Jp*detT];
+        J= [eye(f),-eye(f)*detT ,zeros(f,m);K*detT,M+C*detT,zeros(f,m);zeros(m,f),-Wnode*Gs*detT,eye(m)-Jp*detT];
         y = -J\F;  % solve the linear equations
         q(:,i+1) = q(:,i+1) + y;
  

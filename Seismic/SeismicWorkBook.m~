@@ -3,7 +3,7 @@ m = 7;
 k = 300;
 c = 52;
 kappa2 = 0;
-kappa3 = 1.5;
+kappa3 = 0;
 
 [M,C,K,fnl] = build_model(n,m,c,k,kappa2,kappa3);
 nRealization=1;
@@ -15,7 +15,7 @@ epsilon=1e-1; %% forcing magnitude
 SS = StochasticSystem();
 
 set(SS,'filterPSD',filterPSD,'linear',true)
-set(SS,'M',M,'C',C,'K',K,'fnl',fnl,'gFactor',-m);
+set(SS,'M',M,'C',C,'K',K,'fnl',fnl);
 set(SS.Options,'Emax',5,'Nmax',10,'notation','multiindex')
 set(SS.SSOptions,'ssMethod','indirect')
 SS.add_random_forcing(nRealization, T0, nPoints,forcingdof);
@@ -45,7 +45,7 @@ order = 5; % SSM approximation order
 tic
 [wss,ssmPSD]=S.extract_PSD(PSDpair, order,'fil',clusterRun);
 time_ssm=toc;
-disp([num2str(time_ssm),' amount of time'])
+disp(['num2str(time_sde),' amount of time'])
 %%
 % linear_analytic=SS.compute_linear_PSD(SS.input.omega,SS.input.PSD);
 

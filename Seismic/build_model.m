@@ -17,3 +17,14 @@ f3 = f3(3:n+2,3:n+2,3:n+2,3:n+2);
 % Adding cubic spring to first node of the beam 
 
 fnl = {f2, f3};
+
+% Mi=5;
+% Ci=100;
+% Ki=20;
+% 
+% Si=epsilon^2*1e2; % white noise intensity
+% PSD.Mz=Mi;
+% PSD.Cz=Ci;
+% PSD.Kz=Ki;
+% PSD.S=Si; % random forcing parameters subject to intensity
+% PSD.G = -m*ones(n,1);

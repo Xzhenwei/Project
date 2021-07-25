@@ -17,6 +17,7 @@ classdef StochasticSystem < DynamicalSystem
         
         timevector = []
         
+        gFactor = 1;
         Fsto = [] % an vector of stochastic forcing realization
         
         sdeImpTimeDisp = true;

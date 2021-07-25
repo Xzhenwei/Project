@@ -20,11 +20,13 @@ classdef SSM < Manifold
         
         [FRC] = FRC_level_set(obj, resMode, order, parName, parRange)        
         
-        p = indirect_Euler_SSM(obj, N,T0,PSD,f,m,Wnode,R0)
+        p = ssm_Euler_solver(obj, N,T0,PSD,f,m,Wnode,R0)
         
-        [w,Gzz] = compute_ssmPSD(obj, PSDpair, ORDER, method,clusterRun)
+        [w,Gzz] = compute_ssmPSD(obj, PSDpair, W0, R0, method)
         
-        [wss,Gss] = extract_PSD(obj, PSDpair, W0, R0, method)
+        [wss,Gss] = extract_PSD(obj, PSDpair, ORDER, method,clusterRun)
+        
+        [w, X_l] = compute_analyticPSD(obj,PSDpair)
     end
 end
 
