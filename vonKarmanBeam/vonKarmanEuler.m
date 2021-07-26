@@ -15,7 +15,7 @@ nPoints=2^14; %% control the accuracy of numerical differential equation
 SS = StochasticSystem();
 
 set(SS,'filterPSD',filterPSD,'linear',false)
-set(SS,'M',M,'C',C,'K',K,'fnl',fnl);
+set(SS,'M',M,'C',C,'K',K,'fnl',fnl,'gFactor',-eMass);
 set(SS.Options,'Emax',5,'Nmax',10,'notation','multiindex')
 set(SS.SSOptions,'ssMethod','indirect')
 SS.add_random_forcing(nRealization, T0, nPoints,outdof);

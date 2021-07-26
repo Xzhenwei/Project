@@ -17,7 +17,7 @@ nPoints=2^14; %% control the accuracy of numerical differential equation
 SS = StochasticSystem();
 
 set(SS,'filterPSD',filterPSD,'linear',false)
-set(SS,'M',M,'C',C,'K',K,'fnl',fnl);
+set(SS,'M',M,'C',C,'K',K,'fnl',fnl,'gFactor',-eMass);
 set(SS.Options,'Emax',5,'Nmax',10,'notation','multiindex')
 set(SS.SSOptions,'ssMethod','indirect')
 SS.add_random_forcing(nRealization, T0, nPoints,outdof);
@@ -50,12 +50,12 @@ disp([num2str(time_ssm),' amount of time'])
 
 %%
 figure
-plot(wss,ssmPSD.PSD,'linewidth',1,'DisplayName','SSM')
+plot(wss,ssmPSD,'linewidth',1,'DisplayName','SSM')
 hold on
 plot(w,outputPSD(1,:),'linewidth',1,'DisplayName','Full System Simulation')
 hold on
 % plot(w,linear_analytic(n,:),'linewidth',1,'DisplayName','linear analytic')
-% % xline(firts_res,'-',{'First Resonance'},'linewidth',1.5);
+xline(firts_res,'-',{'First Resonance'},'linewidth',1.5);
 legend
 xlim([0,10]);
 grid on
