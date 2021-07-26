@@ -3,6 +3,7 @@ classdef SSOptions < matlab.mixin.SetGet
     properties
         ssMethod
         outDOF = []; % output degree of freedom
+        
     end
     methods
         

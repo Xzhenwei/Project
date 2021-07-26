@@ -55,7 +55,7 @@ hold on
 plot(w,outputPSD(1,:),'linewidth',1,'DisplayName','Full System Simulation')
 hold on
 % plot(w,linear_analytic(n,:),'linewidth',1,'DisplayName','linear analytic')
-xline(firts_res,'-',{'First Resonance'},'linewidth',1.5);
+% xline(firts_res,'-',{'First Resonance'},'linewidth',1.5);
 legend
 xlim([0,10]);
 grid on

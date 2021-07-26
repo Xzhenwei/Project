@@ -1,38 +1,34 @@
-function p=ssm_Euler_solver(obj, N,T0,PSD,f,m,Wnode,R0) %% change the name 
-    % l is the dim of manifold, n is dim of system, f= dim of filter;
+function p=ssm_Implicit_solver(obj, N,T0,PSD,f,m,Wnode,R0) %% change the name 
+    % l is the dim of manifold, n is dim of system, assmue 1-dim filter;
+
 maxiter=1000; tol=1e-9;
 
 detT=T0/N;
 n=obj.System.n;
 M=PSD.Mz;  C=PSD.Cz;   K=PSD.Kz;   S=PSD.S; sigma=sqrt(S*2*pi); %variance
-PSD.G=zeros(n,1);PSD.G(2,1)=1;
+
 Gs=[PSD.G;zeros(n,f)]; %Gs=[Gs,zeros(2*n,1)];
 z=zeros(f,N+1); v=zeros(f,N+1); p=zeros(m,N+1);
-q=[z;v;p]; 
-dW=zeros(f+f+m,1); 
+
+dW=zeros(f,1); 
 
 display = obj.ssmSEulerTimeDisp;
 
 for i=1:N
 
-    detu=sigma*randn*sqrt(detT);  dW(2*f)=detu; 
+    detu=sigma*randn*sqrt(detT);  dW(end)=detu; 
+    z(:,i+1)=z(:,i)+detT*v(:,i);
+    v(:,i+1)=v(:,i)-M\(detT*(C*v(:,i)+K*z(:,i))+dW);
+    
     error1 = 1e8;
     iter = 0;
     
     while error1 > tol
-        iter = iter+1; % update iteration
-        z(:,i+1)=q(1:f,i+1);v(:,i+1)=q(f+1:2*f,i+1);p(:,i+1)=q(2*f+1:end,i+1);
-    
-        F=[z(:,i+1)-v(:,i+1)*detT-z(:,i);...
-        (M+C*detT)*v(:,i+1)+K*z(:,i+1)*detT-M*v(:,i);...
-        p(:,i+1)-expand_coefficients(R0,m, p(:,i+1))*detT-Wnode*Gs*v(:,i+1)*detT-p(:,i)]...
-        -dW;
-    
-        Jp = compute_J_R0(R0,m, p(:,i+1));
-       
-        J= [eye(f),-eye(f)*detT ,zeros(f,m);K*detT,M+C*detT,zeros(f,m);zeros(m,f),-Wnode*Gs*detT,eye(m)-Jp*detT];
+        F=p(:,i+1)-p(:,i)-expand_coefficients(R0,m, p(:,i+1))*detT-Wnode*Gs*v(:,i+1)*detT;
+        Jp = compute_J_R0(R0,m, p(:,i+1))*detT;
+        J= eye(m) - Jp;
         y = -J\F;  % solve the linear equations
-        q(:,i+1) = q(:,i+1) + y;
+        p(:,i+1) = p(:,i+1) + y;
  
         % calculate errors
         error1 = sqrt(sum(y.^2));
@@ -42,12 +38,11 @@ for i=1:N
             warning('Maximum number of iterations (%i) exceeded, solver may not have converged.', maxiter);
             break;
         end 
-        
     end
-
-    
     %% update
-
+    if norm(z(:,i+1))>1e10
+        error('narrowing time step')
+    end
     if display
         disp(['time integration completed: ', num2str(i/N*100), '%']) 
     end
@@ -66,7 +61,6 @@ S = zeros(n,1);
     end
     
 end
-
 
 function J = compute_J_R0(R0,n, p)
 % COMPUTE_J_R0 This function computes the Jacobian of  nonlinear R0
@@ -92,4 +86,3 @@ J = zeros(n,n); T={};l=0;
     end
 
 end
-
