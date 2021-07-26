@@ -1,13 +1,13 @@
 function p=ssm_Implicit_solver(obj, N,T0,PSD,f,m,Wnode,R0) %% change the name 
     % l is the dim of manifold, n is dim of system, assmue 1-dim filter;
 
-maxiter=1000; tol=1e-9;
+maxiter=1000; tol=1e-10;
 
 detT=T0/N;
 n=obj.System.n;
 M=PSD.Mz;  C=PSD.Cz;   K=PSD.Kz;   S=PSD.S; sigma=sqrt(S*2*pi); %variance
 
-Gs=[PSD.G;zeros(n,f)]; %Gs=[Gs,zeros(2*n,1)];
+Gs=[PSD.G;zeros(n,f)];
 z=zeros(f,N+1); v=zeros(f,N+1); p=zeros(m,N+1);
 
 dW=zeros(f,1); 

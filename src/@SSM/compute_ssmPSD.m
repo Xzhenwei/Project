@@ -12,7 +12,7 @@ m = obj.dimManifold;
 %%% 
 % the resolution of solving 2-dim system is higher than original system in
 % order to capture the high frequency information
-num_points = obj.System.nPoints*2^2; % 3 when filter was used.
+num_points = obj.System.nPoints*2^3; % 3 when filter was used.
 
 T=obj.System.timeSpan;
 p0 = zeros(m,1);

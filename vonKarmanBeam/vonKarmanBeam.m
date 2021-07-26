@@ -1,6 +1,4 @@
-
 % *system parameters*
-
 nElements = 10;
 epsilon = 1e-3;
 %% generate model

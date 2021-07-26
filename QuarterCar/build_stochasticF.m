@@ -7,6 +7,7 @@ PSD.Mz=Mi;
 PSD.Cz=Ci;
 PSD.Kz=Ki;
 PSD.S=Si; % random forcing parameters subject to intensity
+PSD.G=zeros(n,2); 
 %%%%%%%%
 omega=linspace(0,200,nPoints+1);
 
@@ -15,7 +16,7 @@ PSD1 = epsilon^2 * 50 ./ (omega.^5) .* exp(-400./(omega.^4)) ; PSD1(1) = 0;
 samplePSD=[PSD1;omega];
 
 forcingDof=[n];
-
+PSD.G(forcingDof,1)=1;
 x0 = zeros(n,1);
 xd0 = zeros(n,1);
 IC=[x0,xd0];
