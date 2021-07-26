@@ -77,8 +77,8 @@ J = zeros(n,n); T={};l=0;
     end
     for j=1:l
             if length(size(T{j}))==length(p)
-
-                J =  J + tenmat(T{j},max(size(T{j}))).data;
+                Tensor2Mat = tenmat(T{j},max(size(T{j})));
+                J =  J + Tensor2Mat.data;
             else
 
                 J =  J + expand_tensor_derivative(T{j},p);
