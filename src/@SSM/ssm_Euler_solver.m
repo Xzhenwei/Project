@@ -61,9 +61,10 @@ function S = expand_coefficients(S0,n, p)
 S = zeros(n,1);
 
 % expand autonomous coefficients
-for k = 1:length(S0)
-    S =  S + expand_multiindex(S0{k},p);
-end
+    for k = 1:length(S0)
+        S =  S + expand_multiindex(S0{k},p);
+    end
+    
 end
 
 
@@ -74,21 +75,21 @@ function J = compute_J_R0(R0,n, p)
 J = zeros(n,n); T={};l=0;
 
 % transfer multi-index to tensor
-for k = 1:length(R0)
-    if ~isempty(R0{k}.coeffs)
-        T{l+1} = multi_index_to_tensor(R0{k}.coeffs, R0{k}.ind);
-        l=l+1;
-    end
-end
-for j=1:l
-        if length(size(T{j}))==length(p)
-            
-            J =  J + tenmat(T{j},max(size(T{j}))).data;
-        else
-            
-            J =  J + expand_tensor_derivative(T{j},p);
+    for k = 1:length(R0)
+        if ~isempty(R0{k}.coeffs)
+            T{l+1} = multi_index_to_tensor(R0{k}.coeffs, R0{k}.ind);
+            l=l+1;
         end
-end
+    end
+    for j=1:l
+            if length(size(T{j}))==length(p)
+
+                J =  J + tenmat(T{j},max(size(T{j}))).data;
+            else
+
+                J =  J + expand_tensor_derivative(T{j},p);
+            end
+    end
 
 end
 

@@ -44,7 +44,7 @@ S.choose_E(masterModes);
 order = 5; % SSM approximation order
 %%
 tic
-[wss,ssmPSD]=S.extract_PSD(PSDpair, order,'fil',clusterRun);
+[wss,ssmPSD]=S.extract_PSD(PSDpair, order,'filter',clusterRun);
 time_ssm=toc;
 disp([num2str(time_ssm),' amount of time'])
 
