@@ -44,6 +44,6 @@ order = 5; % SSM approximation order
 S.ssmSEulerTimeDisp = false;
 %%
 tic
-[wss,ssmPSD]=S.extract_PSD(PSDpair, order,'fil',clusterRun);
+[wss,ssmPSD]=S.extract_PSD(PSDpair, order,'filter',clusterRun);
 time_ssm=toc;
 disp([num2str(time_ssm),' amount of time'])
