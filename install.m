@@ -29,8 +29,8 @@ addpath(fullfile(maindir, 'src', 'frc'));
 % addpath(fullfile(maindir, 'Seismic'));
 addpath(fullfile(maindir, 'vonKarmanBeam'));
 
-run vonKarmanEuler.m
-save('workspacevonKarman.mat')
+run vonKarmanBeamWorkbook.mlx
+save('workspacevonKarmanMlx.mat')
 end
 
 
