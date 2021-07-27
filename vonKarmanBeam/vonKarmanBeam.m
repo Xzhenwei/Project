@@ -41,18 +41,21 @@ masterModes = [1,2];
 S.choose_E(masterModes);
 order = 5; % SSM approximation order
 %%
+freq_range=[0 10];
 tic
-[wss,ssmPSD]=S.extract_PSD(PSDpair, order,'filter',clusterRun);
+[wss,ssmPSD]=S.extract_PSD(PSDpair, order,'filter heun',freq_range,clusterRun);
 time_ssm=toc;
 disp([num2str(time_ssm),' amount of time'])
 
+%%
+[w_linear, linear_analytic]=SS.compute_linear_PSD(PSDpair);
 %%
 figure
 plot(wss,ssmPSD,'linewidth',1,'DisplayName','SSM')
 hold on
 plot(w,outputPSD(1,:),'linewidth',1,'DisplayName','Full System Simulation')
 hold on
-% plot(w,linear_analytic(n,:),'linewidth',1,'DisplayName','linear analytic')
+plot(w_linear,linear_analytic(1,:),'linewidth',1,'DisplayName','linear analytic')
 % xline(firts_res,'-',{'First Resonance'},'linewidth',1.5);
 legend
 xlim([0,10]);

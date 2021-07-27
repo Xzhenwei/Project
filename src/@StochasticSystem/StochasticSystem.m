@@ -72,7 +72,7 @@ classdef StochasticSystem < DynamicalSystem
 
         [w,PHI]=sde_solver(obj,SDEmethod,PowerSpectralPair)
         
-        linear_analytic=compute_linear_PSD(obj,omega,PSD)
+        [w,linear_analytic]=compute_linear_PSD(obj,PSDpair)
         
         [w,PSD] = monte_carlo_average(obj,method,PSDpair,nRealization,clusterRun)
         

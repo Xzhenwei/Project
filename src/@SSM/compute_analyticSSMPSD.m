@@ -1,4 +1,4 @@
-function [w, X_l] = compute_analyticPSD(obj,PSDpair)
+function [w, X_l] = compute_analyticSSMPSD(obj,PSDpair)
 N = obj.System.nPoints;
 T0 = obj.System.timeSpan;
 w = (1:N+1)*1/T0*2*pi;

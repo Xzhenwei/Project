@@ -12,7 +12,7 @@ m = obj.dimManifold;
 %%% 
 % the resolution of solving 2-dim system is higher than original system in
 % order to capture the high frequency information
-num_points = obj.System.nPoints*2^3; % 3 when filter was used.
+num_points = obj.System.nPoints*2^2; % 3 when filter was used.
 
 T=obj.System.timeSpan;
 p0 = zeros(m,1);
@@ -36,6 +36,18 @@ switch lower(method)
         f=length(Mz);
         p=ssm_Implicit_solver(obj, num_points,T,PSD,f,m,Wnode,R0);
 %         p=ssm_Heun_solver(obj, num_points,T,PSD,f,m,Wnode,R0);
+        
+        z=zeros(2*n,length(p));
+        for i=1:length(p)
+            z(:,i) = expand_autonomous(W0,2*n, p(:,i));
+        end
+        [w,Gz]=crossPSDestimator(z(PSDpair(j,1),:),z(PSDpair(j,2),:),t);
+        Gzz(j,:)=Gz;
+     case 'filter heun'
+        PSD=obj.System.filterPSD;
+        Mz=PSD.Mz;
+        f=length(Mz);
+        p=ssm_Heun_solver(obj, num_points,T,PSD,f,m,Wnode,R0);
         
         z=zeros(2*n,length(p));
         for i=1:length(p)
