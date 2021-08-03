@@ -14,11 +14,19 @@ display = obj.ssmSEulerTimeDisp;
 
 for i=1:N
 
-    detu=sigma*randn*sqrt(detT);  dW(2*f)=detu; 
-    z(:,i+1)=z(:,i)+detT*v(:,i);
-    v(:,i+1)=v(:,i)-M\(detT*(C*v(:,i)+K*z(:,i))+detu);
-    p(:,i+1)=p(:,i)+expand_coefficients(R0,m, p(:,i))*detT+Wnode*Gs*v(:,i)*detT;
+    detu = sigma*randn*sqrt(detT);  dW(2*f)=detu; 
+    zhat = z(:,i)+detT*v(:,i);
+    vhat = v(:,i)-M\(detT*(C*v(:,i)+K*z(:,i))+detu);
+    phat = p(:,i)+expand_coefficients(R0,m, p(:,i))*detT+Wnode*Gs*v(:,i)*detT;
     
+    zbar = (z(:,i) + zhat)/2;
+    vbar = (v(:,i) + vhat)/2;
+    pbar = (p(:,i) + phat)/2;
+    
+    z(:,i+1)=z(:,i)+detT*vbar;
+    v(:,i+1)=v(:,i)-M\(detT*(C*vbar+K*zbar)+detu); 
+    
+    p(:,i+1)=p(:,i)+expand_coefficients(R0,m, pbar)*detT+Wnode*Gs*zbar*detT; % taking disp
     %% update
     if norm(p(:,1))>1e20
         error('narrowing time step')

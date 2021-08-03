@@ -21,16 +21,19 @@ addpath(fullfile(maindir, 'src'));
 
 addpath(fullfile(maindir, 'src','misc'));
 
-addpath(fullfile(maindir, 'src','multiindex'));
+addpath(fullfile(maindir, 'src','multiindex')); 
 
 addpath(fullfile(maindir, 'src', 'frc'));
 
 % addpath(fullfile(maindir, 'QuarterCar'));
-% addpath(fullfile(maindir, 'Seismic'));
-addpath(fullfile(maindir, 'vonKarmanBeam'));
+addpath(fullfile(maindir, 'Seismic'));
+% addpath(fullfile(maindir, 'vonKarmanBeam'));
 
-run vonKarmanBeamWorkbook.mlx
-save('workspacevonKarmanMlx.mat')
+run SeismicWorkBook2.mlx
+wsTime = clock;
+char=['Date_',num2str(wsTime(2)),num2str(wsTime(3)),...
+    ' Time_',num2str(wsTime(4)),num2str(wsTime(5)),'.mat'];
+save(char,'-mat')
 end
 
 

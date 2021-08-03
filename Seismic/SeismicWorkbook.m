@@ -47,21 +47,6 @@ tic
 time_ssm=toc;
 disp([num2str(time_ssm),' amount of time'])
 %%
-% linear_analytic=SS.compute_linear_PSD(SS.input.omega,SS.input.PSD);
-
-%% this section plots the result
-% figure
-% plot(w,outputPSD(1,:),'linewidth',1)
-% % hold on
-% % plot(w,linear_analytic(PSDpair(1),:),'linewidth',2)
-% xlim([0,10])
-% xlabel('\Omega frequency')
-% ylabel('Power Density')
-% legend(strcat('PSD solved by ', ": ",method), 'linear analytic')
-% legend('boxoff')
-% title('Power Spectral Density of X1')
-% grid on
-%%
 figure
 plot(wss,ssmPSD,'linewidth',1,'DisplayName','SSM')
 hold on

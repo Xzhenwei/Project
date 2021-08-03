@@ -6,7 +6,8 @@ linewidth = 1.8;
 nOutDof = size(Gss,1)/numel(ORDER);
 
     for i=1:nOutDof
-        figure(i)
+        % title (PSD _ 10 , 10)
+        figure
         x1 = PSDpair(i,1);
         x2 = PSDpair(i,2);
         for j = 1:numel(ORDER)

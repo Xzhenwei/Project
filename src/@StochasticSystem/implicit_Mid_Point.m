@@ -12,10 +12,11 @@ function [X,V]=implicit_Mid_Point(obj,N,T0,PSD)
     
     sigma=sqrt(S*2*pi); %variance
     M = [Mz, sparse(m,n); sparse(n,m), obj.M];
-%     C = [Cz, sparse(m,n); sparse(n,m), obj.C]; filter with nonzero mean
-%     K = [Kz, sparse(m,n); -G, obj.K];
-    C = [Cz, sparse(m,n); -G, obj.C];
-    K = [Kz, sparse(m,n); sparse(n,m), obj.K];
+    C = [Cz, sparse(m,n); sparse(n,m), obj.C]; % filter with nonzero mean
+    K = [Kz, sparse(m,n); -G, obj.K];
+
+%     C = [Cz, sparse(m,n); -G, obj.C]; % filter with zero mean
+%     K = [Kz, sparse(m,n); sparse(n,m), obj.K];
     
     q=zeros(m+n,N+1); qd=zeros(m+n,N+1); 
     

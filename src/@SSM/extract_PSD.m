@@ -57,6 +57,8 @@ colors = get(0,'defaultaxescolororder');
     
     
     end
+    
+    
 plot_PSD(w,Gss,ORDER,PSDpair,colors,freq_range)
 
 
