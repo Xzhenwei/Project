@@ -47,7 +47,7 @@ colors = get(0,'defaultaxescolororder');
         for k=1:nOutput
 
 
-            for i=3:num_points+1
+            for i=1:num_points+1
                 Gs(k,i)= interp1(wss,Gzz(k,:),w(i)) +X_l(k,i);
             end
 
