@@ -26,6 +26,7 @@ clusterRun=true; %% if the script is run on local or cluster.
 method="filter ImplicitMidPoint";
 PSDpair=[n,n];
 
+[V, D, W] = SS.linear_spectral_analysis();
 firts_res=abs(imag(D(1)));
 SS.sdeImpTimeDisp = false;
 [w,outputPSD] = SS.monte_carlo_average(method,PSDpair,nRealization,clusterRun);
