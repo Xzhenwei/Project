@@ -44,15 +44,9 @@ freq_range=[0 7]; % depend on res
 S.ssmSEulerTimeDisp = false;
 [wss,ssmPSD]=S.extract_PSD(PSDpair, order,'filter heun',freq_range,clusterRun);
 
+char=['Epsilon',num2str(epsilon),'.mat'];
+save(char,'-mat')
 
-figure
-plot(wss,ssmPSD,'linewidth',1)
-hold on
-plot(w,outputPSD(1,:),'linewidth',1)
-hold on
-plot(w_linear,linear_analytic(1,:),'linewidth',1)
-xline(firts_res,'-',{'First Resonance'},'linewidth',1.5);
-legend('SSM','nonlinear simulation','linear analytic')
-xlim([0,7]);
-grid on
+
+
 

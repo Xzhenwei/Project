@@ -31,22 +31,17 @@ addpath(fullfile(maindir, 'Seismic'));
 
 epsilon=1e-2;
 SeismicEulerWorkBook(epsilon)
-char=['Epsilon',num2str(epsilon),'.mat'];
-save(char,'-mat')
-
+clear all
 epsilon=20;
 SeismicEulerWorkBook(epsilon)
-char=['Epsilon',num2str(epsilon),'.mat'];
-save(char,'-mat')
+clear all 
 
 epsilon=30;
 SeismicEulerWorkBook(epsilon)
-char=['Epsilon',num2str(epsilon),'.mat'];
-save(char,'-mat')
+clear all
 epsilon=45;
 SeismicEulerWorkBook(epsilon)
-char=['Epsilon',num2str(epsilon),'.mat'];
-save(char,'-mat')
+clear all
 end
 
 
