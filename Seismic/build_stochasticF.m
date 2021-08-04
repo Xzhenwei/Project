@@ -7,7 +7,7 @@ Mi=5;
 Ci=100;
 Ki=20;
 
-Si=epsilon^2*1e3; % white noise intensity
+Si=epsilon^2*1e6; % white noise intensity
 PSD.Mz=Mi;
 PSD.Cz=Ci;
 PSD.Kz=Ki;

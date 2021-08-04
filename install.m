@@ -29,10 +29,23 @@ addpath(fullfile(maindir, 'src', 'frc'));
 addpath(fullfile(maindir, 'Seismic'));
 % addpath(fullfile(maindir, 'vonKarmanBeam'));
 
-run SeismicWorkBook2.mlx
-wsTime = clock;
-char=['Date_',num2str(wsTime(2)),num2str(wsTime(3)),...
-    ' Time_',num2str(wsTime(4)),num2str(wsTime(5)),'.mat'];
+epsilon=1e-2;
+SeismicEulerWorkBook(epsilon)
+char=['Epsilon',num2str(epsilon),'.mat'];
+save(char,'-mat')
+
+epsilon=20;
+SeismicEulerWorkBook(epsilon)
+char=['Epsilon',num2str(epsilon),'.mat'];
+save(char,'-mat')
+
+epsilon=30;
+SeismicEulerWorkBook(epsilon)
+char=['Epsilon',num2str(epsilon),'.mat'];
+save(char,'-mat')
+epsilon=45;
+SeismicEulerWorkBook(epsilon)
+char=['Epsilon',num2str(epsilon),'.mat'];
 save(char,'-mat')
 end
 
