@@ -29,19 +29,8 @@ addpath(fullfile(maindir, 'src', 'frc'));
 addpath(fullfile(maindir, 'Seismic'));
 % addpath(fullfile(maindir, 'vonKarmanBeam'));
 
-epsilon=1e-2;
-SeismicEulerWorkBook(epsilon)
-clear all
-epsilon=20;
-SeismicEulerWorkBook(epsilon)
-clear all 
-
-epsilon=30;
-SeismicEulerWorkBook(epsilon)
-clear all
-epsilon=45;
-SeismicEulerWorkBook(epsilon)
-clear all
+run SeismicWorkBook2.mlx
+save('linearSeismic.mat')
 end
 
 
