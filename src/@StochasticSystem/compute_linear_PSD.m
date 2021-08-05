@@ -1,4 +1,4 @@
-function [w,linear_analytic]=compute_linear_PSD(obj,PSDpair)
+function [w,linear_analytic]=compute_linear_PSD(obj,PSDpair,freq_range)
 % linear_analytic. This function computes the correspoding linear response
 % PSD with the input PSD along with its frequency domain vector omega.
 
@@ -45,4 +45,32 @@ switch obj.SSOptions.ssMethod
         error('please specify an input PSD')
         
 end
+
+xlab = '$\omega$ Frequency';
+ylab = 'Power';
+linewidth = 1.8;
+
+    figure
+    x1 = PSDpair(i,1);
+    x2 = PSDpair(i,2);
+            
+    plot(w,linear_analytic(i,:),'linewidth',linewidth,'DisplayName',...
+                'Linear Analytic PSD');
+    hold on
+    title (['PSD of Dof ',num2str(x1),' and ',num2str(x2)])
+    add_labels(xlab,ylab)
+    lgd = legend();
+    set(lgd,'Interpreter','latex','Location','best');
+    grid on
+    xlim([min(freq_range) max(freq_range)])
+    hold off
+
+end
+end
+
+function add_labels(xlab,ylab)
+xlabel(xlab,'Interpreter','latex');
+ylabel(ylab,'Interpreter','latex');
+set(gca,'FontSize',14);
+grid on, axis tight; legend boxoff;
 end

@@ -14,10 +14,10 @@ nOutDof = size(Gss,1)/numel(ORDER);
             order = ORDER(j);
             
             plot(w,Gss(nOutDof*(j-1)+i,:),'Color', colors(j,:),'linewidth',linewidth,'DisplayName',...
-                strcat('SSM-$$\mathcal{O}(',num2str(order),')$$ PSD of Dof \,',num2str(x1),'\, and Dof \,',num2str(x2)));
+                strcat('SSM-$$\mathcal{O}(',num2str(order),')$$ PSD'));
             hold on
         end
-        
+        title (['PSD of Dof ',num2str(x1),' and ',num2str(x2)])
         add_labels(xlab,ylab)
         lgd = legend();
         set(lgd,'Interpreter','latex','Location','best');

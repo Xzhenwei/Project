@@ -31,7 +31,7 @@ firts_res=abs(imag(D(1)));
 SS.sdeImpTimeDisp = false;
 [w,outputPSD] = SS.monte_carlo_average(method,PSDpair,nRealization,clusterRun);
 
-[w_linear, linear_analytic]=SS.compute_linear_PSD(PSDpair);
+
 
 S = SSM(SS);
 set(S.Options, 'reltol', 0.1,'notation','multiindex')
@@ -43,6 +43,7 @@ order = 5;
 freq_range=[0 7]; % depend on res
 S.ssmSEulerTimeDisp = false;
 [wss,ssmPSD]=S.extract_PSD(PSDpair, order,'filter heun',freq_range,clusterRun);
+[w_linear, linear_analytic]=SS.compute_linear_PSD(PSDpair,freq_range);
 
 char=['Epsilon',num2str(epsilon),'.mat'];
 save(char,'-mat')
