@@ -8,8 +8,8 @@ kappa3 = 2;
 
 [M,C,K,fnl] = build_model(n,m,c,k,kappa2,kappa3);
                                                     
-nRealization=1;
-resol = 1;
+nRealization=20;
+resol = 2;
 T0=resol*100; %% PSD frequency domain resolution is ~ 1/T0
 nPoints=resol*2^14; %% control the accuracy of numerical differential equation
 [filterPSD,forcingdof,stochastic_f] = build_stochasticF(m,epsilon,n);
