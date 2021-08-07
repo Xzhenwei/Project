@@ -8,7 +8,7 @@ nElements = 10;
 n = length(M);
 %%%
 nRealization=30;
-resol = 3;
+resol = 5;
 T0=resol*100; %% PSD frequency domain resolution is ~ 1/T0
 nPoints=resol*2^14; %% control the accuracy of numerical differential equation
 [filterPSD, stochastic_f] = build_stochasticF(eMass,n,epsilon);

@@ -1,4 +1,4 @@
-function plot_all_PSD(w,Gss,outputPSD,linear_analytic,ORDER,PSDpair,freq_range)
+function plot_all_PSD(w,Gss,outputPSD,linear_analytic,ORDER,PSDpair,freq_range,dispLinear)
 colors = get(0,'defaultaxescolororder');
 
 xlab = '$\omega$ Frequency';
@@ -19,8 +19,10 @@ nOutDof = size(Gss,1)/numel(ORDER);
         end
         plot(w,outputPSD(i,:),'Color',colors(j+1,:),'linewidth',linewidth,...
             'DisplayName','full system computation')
+        if dispLinear
         plot(w,linear_analytic(i,:),'Color',colors(j+2,:),'linewidth',linewidth,...
             'DisplayName','linear system response')
+        end
         title (['PSD of Dof ',num2str(x1),' and ',num2str(x2)])
         add_labels(xlab,ylab)
         lgd = legend();
