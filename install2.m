@@ -25,23 +25,11 @@ addpath(fullfile(maindir, 'src','multiindex'));
 
 addpath(fullfile(maindir, 'src', 'frc'));
 
-% addpath(fullfile(maindir, 'QuarterCar'));
+addpath(fullfile(maindir, 'src', 'psd'));
+
 addpath(fullfile(maindir, 'vonKarmanBeam'));
 
-% epsilon=1e-2;
-% vonKarmanEuler(epsilon)
-% clear all
-% epsilon=1.5e-2;
-% vonKarmanEuler(epsilon)
-% clear all
-epsilon=3e-2;
-vonKarmanEuler(epsilon)
-clear all
-epsilon=5e-2;
-vonKarmanEuler(epsilon)
-clear all
-epsilon=1e-1;
-vonKarmanEuler(epsilon)
+run vonKarmanWorkBook.mlx
 
 end
 

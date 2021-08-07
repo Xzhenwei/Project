@@ -25,6 +25,8 @@ addpath(fullfile(maindir, 'src','multiindex'));
 
 addpath(fullfile(maindir, 'src', 'frc'));
 
+addpath(fullfile(maindir, 'src', 'psd'));
+
 % addpath(fullfile(maindir, 'QuarterCar'));
 addpath(fullfile(maindir, 'Seismic'));
 % addpath(fullfile(maindir, 'vonKarmanBeam'));
