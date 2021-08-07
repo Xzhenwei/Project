@@ -29,19 +29,7 @@ addpath(fullfile(maindir, 'src', 'psd'));
 
 addpath(fullfile(maindir, 'vonKarmanBeam'));
 
-epsilon=0.1;
-vonKarmanEuler(epsilon)
-
-clear all
-
-epsilon=0.5;
-vonKarmanEuler(epsilon)
-
-clear all
-epsilon=1;
-vonKarmanEuler(epsilon)
-
-clear all
+run vonKarmanWorkBook.mlx
 end
 
 
