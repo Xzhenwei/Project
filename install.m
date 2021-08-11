@@ -31,8 +31,8 @@ addpath(fullfile(maindir, 'src', 'psd'));
 addpath(fullfile(maindir, 'Seismic'));
 % addpath(fullfile(maindir, 'vonKarmanBeam'));
 
-run SeismicWorkBook2.mlx
-save('linearSeismic.mat')
+% run SeismicWorkBook2.mlx
+% save('linearSeismic.mat')
 end
 
 
