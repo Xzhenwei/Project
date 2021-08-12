@@ -30,7 +30,7 @@ addpath(fullfile(maindir, 'src', 'psd'));
 addpath(fullfile(maindir, 'vonKarmanBeam'));
 
 epsilon=5e-2
-linear(epsilon);
+linear_vonkarman(epsilon);
 end
 
 

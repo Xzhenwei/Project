@@ -1,4 +1,4 @@
-function linear(epsilon)
+function linear_vonkarman(epsilon)
 nElements = 10;
 % epsilon = 5e-2;
 
