@@ -1,12 +1,13 @@
+function linear(epsilon)
 nElements = 10;
-epsilon = 5e-3;
+% epsilon = 5e-2;
 
 [M,C,K,fnl,outdof,eMass] = build_model(nElements);
+n = length(M);
 f2 = sptensor([n,n,n]); % coeff of quadratic nonlinearity/ 0 
 f3 = sptensor([n,n,n,n]); % coeff of cubic nonlinearity / single cubic spring
 fnl = {f2,f3};
 %%
-n = length(M);
 nRealization=20;
 resol = 1;
 T0=resol*100; %% PSD frequency domain resolution is ~ 1/T0
@@ -15,8 +16,6 @@ nPoints=resol*8*2^14; %% control the accuracy of numerical differential equation
 [filterPSD, stochastic_f] = build_stochasticF(eMass,n,epsilon);
 disp(['Number of degrees of freedom = ' num2str(n)])
 
-
-                                                       
 SS = StochasticSystem();
 
 set(SS,'filterPSD',filterPSD,'linear',true)
@@ -27,7 +26,8 @@ SS.add_random_forcing(nRealization, T0, nPoints,outdof);
 
 %%%%%%%% moving linear beam(look for reference)
 clusterRun=true; %% if the script is run on local or cluster.
-method="Newmark";
+
+method="filter ImplicitMidPoint";
 PSDpair=[n-1,n-1];
 
 [V, D, W] = SS.linear_spectral_analysis();
@@ -35,7 +35,7 @@ firts_res=abs(imag(D(1)));
 
 SS.sdeImpTimeDisp = false;
 [w,outputPSD] = SS.monte_carlo_average(method,PSDpair,nRealization,clusterRun);
-
+%%
 S = SSM(SS);
 set(S.Options, 'reltol', 0.1,'notation','multiindex')
 % set(S.Options, 'reltol', 0.1,'notation','tensor')
