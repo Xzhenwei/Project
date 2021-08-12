@@ -29,7 +29,7 @@ addpath(fullfile(maindir, 'src', 'psd'));
 
 addpath(fullfile(maindir, 'vonKarmanBeam'));
 
-run vonKarmanWorkBook.mlx
+run linear.m
 end
 
 
