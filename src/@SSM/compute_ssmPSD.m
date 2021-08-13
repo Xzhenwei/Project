@@ -15,7 +15,7 @@ m = obj.dimManifold;
 num_points = obj.System.nPoints*2^2; % 3 when filter was used.
 
 T=obj.System.timeSpan;
-p0 = zeros(m,1);
+p0 = sparse(m,1);
 
 detT=T/num_points; t=0:detT:T; 
 
@@ -25,7 +25,7 @@ n=obj.System.n;
 
 nOutput=size(PSDpair,1);
 %%
-Gzz = zeros(nOutput,num_points+1);
+Gzz = sparse(nOutput,num_points+1);
 for j=1:nOutput
 
 %% indirect filter method
@@ -37,11 +37,14 @@ switch lower(method)
         p=ssm_Implicit_solver(obj, num_points,T,PSD,f,m,Wnode,R0);
 %         p=ssm_Heun_solver(obj, num_points,T,PSD,f,m,Wnode,R0);
         
-        z=zeros(2*n,length(p));
+%         z=sparse(2*n,length(p));
+        z1=zeros(1,length(p)); z2=z1;
         for i=1:length(p)
-            z(:,i) = expand_autonomous(W0,2*n, p(:,i));
+            AS = expand_autonomous(W0,2*n, p(:,i));
+            z1(i) = AS(PSDpair(j,1));
+            z2(i) = AS(PSDpair(j,2));
         end
-        [w,Gz]=crossPSDestimator(z(PSDpair(j,1),:),z(PSDpair(j,2),:),t);
+        [w,Gz]=crossPSDestimator(z1,z2,t);
         Gzz(j,:)=Gz;
      case 'filter heun'
         PSD=obj.System.filterPSD;
@@ -49,11 +52,13 @@ switch lower(method)
         f=length(Mz);
         p=ssm_Heun_solver(obj, num_points,T,PSD,f,m,Wnode,R0);
         
-        z=zeros(2*n,length(p));
+        z1=zeros(1,length(p)); z2=z1;
         for i=1:length(p)
-            z(:,i) = expand_autonomous(W0,2*n, p(:,i));
+            AS = expand_autonomous(W0,2*n, p(:,i));
+            z1(i) = AS(PSDpair(j,1));
+            z2(i) = AS(PSDpair(j,2));
         end
-        [w,Gz]=crossPSDestimator(z(PSDpair(j,1),:),z(PSDpair(j,2),:),t);
+        [w,Gz]=crossPSDestimator(z1,z2,t);
         Gzz(j,:)=Gz;
     
     otherwise
@@ -67,12 +72,16 @@ switch lower(method)
         t_span = t;
         [t_45,p_45] = ode45(f_p,t_span ,p0, opts);
         p_45=p_45';
-        z=zeros(2*n,length(p_45));
+        
+        z1=zeros(1,length(p_45)); z2=z1;
         for i=1:length(p_45)
-            z(:,i) = expand_autonomous(W0,2*n, p_45(:,i));
+            AS = expand_autonomous(W0,2*n, p_45(:,i));
+            z1(i) = AS(PSDpair(j,1));
+            z2(i) = AS(PSDpair(j,2));
         end
-        [w,Gz]=crossPSDestimator(z(PSDpair(j,1),:),z(PSDpair(j,2),:),t_45);
+        [w,Gz]=crossPSDestimator(z1,z2,t_45);
         Gzz(j,:)=Gz;
+        
 end
 end
 
@@ -82,26 +91,28 @@ end
 
 function S = expand_DE(obj,S0,U,n, t, p,T)
 % m = numel(p);
-S = zeros(n,1);
+S = sparse(n,1);
 
 % expand autonomous coefficients
-for k = 1:length(S0)
-    S =  S + expand_multiindex(S0{k},p);
-end
+    for k = 1:length(S0)
+        S =  S + expand_multiindex(S0{k},p);
+    end
 % add nonautonomous contribution
-    S = S + U * [obj.System.compute_fstochastic(t); zeros(obj.System.n,1)];
+    S = S + U * [obj.System.compute_fstochastic(t); sparse(obj.System.n,1)];
+    
     if obj.ssmSEulerTimeDisp
     disp(['Integration completed: ', num2str(t/T*100),...
         '%'])
     end
+    
 end
 
 function S = expand_autonomous(W0,n, p)
-S = zeros(n,1);
+S = sparse(n,1);
 % expand autonomous coefficients
-for k = 1:length(W0)
-    S =  S + real(expand_multiindex(W0{k},p));
-end
+    for k = 1:length(W0)
+        S =  S + real(expand_multiindex(W0{k},p));
+    end
 
 end
 

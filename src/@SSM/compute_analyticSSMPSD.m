@@ -20,7 +20,8 @@ switch obj.System.SSOptions.ssMethod
         G = PSD.G;
 
         for j = 1:N + 1
-            Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz)*w(j)*1i; %% taking the velocity of the auxilliary system
+            Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz)*1i; %% taking the 
+            %%% displacement of the auxilliary system
             Phi_F = G*G'*S;
             Zj = Hw_z*Phi_F*Hw_z.';
             

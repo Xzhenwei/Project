@@ -17,7 +17,7 @@ classdef StochasticSystem < DynamicalSystem
         
         timevector = []
         
-        gFactor = 1;
+        gFactor = 1; % this is the factor used in indirect process generation
         Fsto = [] % an vector of stochastic forcing realization
         
         sdeImpTimeDisp = true;
