@@ -29,8 +29,18 @@ addpath(fullfile(maindir, 'src', 'psd'));
 
 addpath(fullfile(maindir, 'vonKarmanBeam'));
 
+epsilon=5e-3
+vonKarmanEuler(epsilon);
+clear all; close all;
 epsilon=5e-2
-linear_vonkarman(epsilon);
+vonKarmanEuler(epsilon);
+clear all; close all;
+epsilon=5e-1
+vonKarmanEuler(epsilon);
+clear all; close all;
+epsilon=1e-1
+vonKarmanEuler(epsilon);
+clear all; close all;
 end
 
 
