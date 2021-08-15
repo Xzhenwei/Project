@@ -26,15 +26,19 @@ switch obj.SSOptions.ssMethod
 
         for j = 1:N + 1
 %             Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz)*w(j)*1i; %% taking the velocity of the auxilliary system
+            if w(j) < 2*max(freq_range)
+                Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz); %% taking the displacement of the auxilliary system
+                Phi_F = G*G'*S;
+                Zj = (-w(j)^2*Mz+1i*w(j)*Cz+Kz)\Phi_F*Hw_z.';
+
+                Hw = inv(-w(j)^2*M+1i*w(j)*C+K);
+                Z_full = (-w(j)^2*M+1i*w(j)*C+K)\Zj*Hw';
+
+                linear_analytic(i,j) = norm(Z_full(PSDpair(i,1),PSDpair(i,2)));
+            else 
+                linear_analytic(i,j) = 0;
+            end
             
-            Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz)*1i; %% taking the displacement of the auxilliary system
-            Phi_F = G*G'*S;
-            Zj = Hw_z*Phi_F*Hw_z.';
-            
-            Hw = inv(-w(j)^2*M+1i*w(j)*C+K);
-            Z_full = (-w(j)^2*M+1i*w(j)*C+K)\Zj*Hw';
-            
-            linear_analytic(i,j) = norm(Z_full(PSDpair(i,1),PSDpair(i,2)));
         end
     case 'direct'
        

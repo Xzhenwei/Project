@@ -20,11 +20,11 @@ switch obj.System.SSOptions.ssMethod
         G = PSD.G;
 
         for j = 1:N + 1
-            if w(j) < max(freq_range)
-                Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz)*1i; %% taking the 
+            if w(j) < 2*max(freq_range)
+                Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz); %% taking the 
                 %%% displacement of the auxilliary system
                 Phi_F = G*G'*S;
-                Zj = Hw_z*Phi_F*Hw_z.';
+                Zj = (-w(j)^2*Mz+1i*w(j)*Cz+Kz)\Phi_F*Hw_z.';
 
                 Hw = inv(-w(j)^2*M+1i*w(j)*C+K);
                 Z_full = (-w(j)^2*M+1i*w(j)*C+K)\G11*Zj*G11'*Hw';
