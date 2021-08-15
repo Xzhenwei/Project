@@ -39,7 +39,7 @@ colors = get(0,'defaultaxescolororder');
             [wss,Gzz] = compute_ssmPSD(obj, PSDpair, W0, R0, method);
         end
 
-        [w, X_l] = compute_analyticSSMPSD(obj,PSDpair);
+        [w, X_l] = compute_analyticSSMPSD(obj,PSDpair,freq_range);
 
 
 

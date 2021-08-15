@@ -1,4 +1,4 @@
-function [w, X_l] = compute_analyticSSMPSD(obj,PSDpair)
+function [w, X_l] = compute_analyticSSMPSD(obj,PSDpair,freq_range)
 N = obj.System.nPoints;
 T0 = obj.System.timeSpan;
 w = (1:N+1)*1/T0*2*pi;
@@ -20,15 +20,20 @@ switch obj.System.SSOptions.ssMethod
         G = PSD.G;
 
         for j = 1:N + 1
-            Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz)*1i; %% taking the 
-            %%% displacement of the auxilliary system
-            Phi_F = G*G'*S;
-            Zj = Hw_z*Phi_F*Hw_z.';
-            
-            Hw = inv(-w(j)^2*M+1i*w(j)*C+K);
-            Z_full = (-w(j)^2*M+1i*w(j)*C+K)\G11*Zj*G11'*Hw';
-            
-            X_l(i,j) = norm(Z_full(PSDpair(i,1),PSDpair(i,2)));
+            if w(j) < max(freq_range)
+                Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz)*1i; %% taking the 
+                %%% displacement of the auxilliary system
+                Phi_F = G*G'*S;
+                Zj = Hw_z*Phi_F*Hw_z.';
+
+                Hw = inv(-w(j)^2*M+1i*w(j)*C+K);
+                Z_full = (-w(j)^2*M+1i*w(j)*C+K)\G11*Zj*G11'*Hw';
+
+                X_l(i,j) = norm(Z_full(PSDpair(i,1),PSDpair(i,2)));
+            else
+                X_l(i,j) = 0;
+            end
+% %             disp([num2str((1-i/N)*100),' %'])
         end
     case 'direct'
        

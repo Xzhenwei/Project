@@ -51,7 +51,7 @@ set(SS,'M',M,'C',C,'K',K,'fnl',fnl);
 set(SS.Options,'Emax',5,'Nmax',10,'notation','multiindex')
 set(SS.SSOptions,'ssMethod','indirect')
 % set(DS.Options,'Emax',5,'Nmax',10,'notation','tensor')
-nRealization=30;
+nRealization=1;
 T0=100; %% PSD frequency domain resolution is ~ 1/T0
 nPoints=2^14; %% control the accuracy of numerical differential equation
 %% 
@@ -61,7 +61,7 @@ nPoints=2^14; %% control the accuracy of numerical differential equation
 % + \frac{\mathbf{f}_0}{2}e^{-i\phi}  $$
 % 
 %%%%%%%% Above is forcing setting and set to DynamicalSystem class
-clusterRun=true; %% if the script is run on local or cluster.
+clusterRun=false; %% if the script is run on local or cluster.
 method="filter ImplicitMidPoint";
 PSDpair=[8370,8370];
 
