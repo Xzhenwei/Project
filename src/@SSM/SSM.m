@@ -5,8 +5,10 @@ classdef SSM < Manifold
     properties
        contOptions = cocoOptions();
        FRCOptions = FRCOptions();
+       PSDOptions = PSDOptions();
        
        ssmSEulerTimeDisp = true;
+       
     end
     
     methods

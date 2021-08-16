@@ -20,7 +20,7 @@ clear all; close all; clc
 % *system parameters*
 
 nDiscretization = 10; % Discretization parameter 30 (#DOFs is proportional to the square of this number)
-epsilon = 50;
+epsilon = 0.1;
 %% generate model
 
 [M,C,K,fnl,fext,outdof,out] = build_model(nDiscretization);
@@ -51,7 +51,7 @@ set(SS,'M',M,'C',C,'K',K,'fnl',fnl);
 set(SS.Options,'Emax',5,'Nmax',10,'notation','multiindex')
 set(SS.SSOptions,'ssMethod','indirect')
 % set(DS.Options,'Emax',5,'Nmax',10,'notation','tensor')
-nRealization=20;
+nRealization=1;
 T0=100; %% PSD frequency domain resolution is ~ 1/T0
 nPoints=2^14; %% control the accuracy of numerical differential equation
 %% 
@@ -76,7 +76,7 @@ firts_res = abs(imag(D(1)));
 
 S = SSM(SS);
 set(S.Options, 'reltol', 0.1,'notation','multiindex')
-% set(S.Options, 'reltol', 0.1,'notation','tensor')
+set(S.PSDOptions, 'nPointfilter', 2)
 masterModes = [1,2]; 
 S.choose_E(masterModes);
 %% PSD using SSMs
@@ -84,11 +84,11 @@ S.choose_E(masterModes);
 
 order = 5; % Approximation order
 %% 
-S.ssmSEulerTimeDisp = true;
+S.ssmSEulerTimeDisp = false;
 
 freq_range=[145 155];
 tic
-[wss,ssmPSD]=S.extract_PSD(PSDpair, order,'filter',freq_range,clusterRun);
+[wss,ssmPSD]=S.extract_PSD(PSDpair, order,'filter heun',freq_range,clusterRun);
 time_ssm=toc;
 disp([num2str(time_ssm),' amount of time'])
 %% Linear part
@@ -106,5 +106,5 @@ S_l.ssmSEulerTimeDisp = false;
 %%
 % [w_linear, linear_analytic]=SS.compute_linear_PSD(PSDpair,freq_range);
 % 
-plot_ssm_lin_PSD(log(wss),20*log(ssmPSD),20*log(ssmPSD_l),order,PSDpair,log(freq_range),true)
+plot_ssm_lin_PSD(log(wss),20*log(ssmPSD),20*log(ssmPSD_l),order,PSDpair,log([0 200]),true)
 
