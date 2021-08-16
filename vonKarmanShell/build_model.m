@@ -1,4 +1,4 @@
-function [M,C,K,fnl,fext, outdof] = build_model(nDiscretization)
+function [M,C,K,fnl,fext, outdof,outdofvec] = build_model(nDiscretization)
 
 %% Finite Element Setup
 % Geometry
@@ -106,7 +106,7 @@ outdof = (outnode-1)*MyAssembly.Mesh.nDOFPerNode+outdir;
 
 outdofvec = sparse(outdof,ones(size(outdof)),1,MyMesh.nDOFs,1);
 outdofvec = MyAssembly.constrain_vector(outdofvec);
-
+outdofvec = find(outdofvec);
 % f_0 = 100*outdofvec;
 f_0 = MyAssembly.constrain_vector(MyAssembly.uniform_body_force());
 outdof = find(f_0);

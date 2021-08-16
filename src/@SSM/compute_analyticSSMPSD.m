@@ -33,7 +33,7 @@ switch obj.System.SSOptions.ssMethod
             else
                 X_l(i,j) = 0;
             end
-% %             disp([num2str((1-i/N)*100),' %'])
+            disp([num2str((1-i/N)*100),' %'])
         end
     case 'direct'
        

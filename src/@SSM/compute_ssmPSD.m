@@ -25,7 +25,7 @@ n=obj.System.n;
 
 nOutput=size(PSDpair,1);
 %%
-Gzz = sparse(nOutput,num_points+1);
+Gzz = zeros(nOutput,num_points+1);
 for j=1:nOutput
 
 %% indirect filter method

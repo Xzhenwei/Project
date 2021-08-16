@@ -39,17 +39,14 @@ colors = get(0,'defaultaxescolororder');
             [wss,Gzz] = compute_ssmPSD(obj, PSDpair, W0, R0, method);
         end
 
-        [w, X_l] = compute_analyticSSMPSD(obj,PSDpair,freq_range);
-
-
+%         [w_l, X_l] = compute_analyticSSMPSD(obj,PSDpair,freq_range);
+        X_l = zeros(size(Gzz)); w_l = wss;
+        w = (1:num_points+1)*1/obj.System.timeSpan*2*pi; 
 
 
         for k=1:nOutput
-
-
-            for i=1:num_points+1
-                Gs(k,i)= interp1(wss,Gzz(k,:),w(i)) +X_l(k,i);
-            end
+            
+            Gs(k,:)= interp1(wss,Gzz(k,:),w) + interp1(w_l,X_l(k,:),w);
 
         end
 

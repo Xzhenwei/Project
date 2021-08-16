@@ -19,11 +19,11 @@ clear all; close all; clc
 %% 
 % *system parameters*
 
-nDiscretization = 30; % Discretization parameter (#DOFs is proportional to the square of this number)
-epsilon = 0.1;
+nDiscretization = 10; % Discretization parameter 30 (#DOFs is proportional to the square of this number)
+epsilon = 50;
 %% generate model
 
-[M,C,K,fnl,fext,outdof] = build_model(nDiscretization);
+[M,C,K,fnl,fext,outdof,out] = build_model(nDiscretization);
 n = length(M); % number of degrees of freedom
 disp(['Number of degrees of freedom = ' num2str(n)])
 disp(['Phase space dimensionality = ' num2str(2*n)])
@@ -45,13 +45,13 @@ disp(['Phase space dimensionality = ' num2str(2*n)])
 % & \mathbf{0}\\\mathbf{0} & \mathbf{M}\end{array}\right],\mathbf{B}=\left[\begin{array}{cc}\mathbf{C} 
 % & \mathbf{M}\\\mathbf{M} & \mathbf{0}\end{array}\right],\quad\quad\mathbf{F}(\mathbf{z})=\left[\begin{array}{c}\mathbf{-\mathbf{f}(\mathbf{x},\dot{\mathbf{x}})}\\\mathbf{0}\end{array}\right],\quad\mathbf{F}^{ext}(\mathbf{z},\mathbf{\phi})=\left[\begin{array}{c}\mathbf{f}^{ext}(\mathbf{\phi})\\\mathbf{0}\end{array}\right]$.
 
-SS = StochasticSystem();
+SS = StochasticSystem();   
 set(SS,'filterPSD',filterPSD,'linear',false)
 set(SS,'M',M,'C',C,'K',K,'fnl',fnl);
 set(SS.Options,'Emax',5,'Nmax',10,'notation','multiindex')
 set(SS.SSOptions,'ssMethod','indirect')
 % set(DS.Options,'Emax',5,'Nmax',10,'notation','tensor')
-nRealization=1;
+nRealization=20;
 T0=100; %% PSD frequency domain resolution is ~ 1/T0
 nPoints=2^14; %% control the accuracy of numerical differential equation
 %% 
@@ -63,7 +63,7 @@ nPoints=2^14; %% control the accuracy of numerical differential equation
 %%%%%%%% Above is forcing setting and set to DynamicalSystem class
 clusterRun=false; %% if the script is run on local or cluster.
 method="filter ImplicitMidPoint";
-PSDpair=[8370,8370];
+PSDpair=[out,out];
 
 SS.add_random_forcing(nRealization, T0, nPoints,outdof);
 
@@ -84,20 +84,27 @@ S.choose_E(masterModes);
 
 order = 5; % Approximation order
 %% 
-S.ssmSEulerTimeDisp = false;
+S.ssmSEulerTimeDisp = true;
 
-freq_range=[0 200];
+freq_range=[145 155];
 tic
-[wss,ssmPSD]=S.extract_PSD(PSDpair, order,'filter heun',freq_range,clusterRun);
+[wss,ssmPSD]=S.extract_PSD(PSDpair, order,'filter',freq_range,clusterRun);
 time_ssm=toc;
 disp([num2str(time_ssm),' amount of time'])
+%% Linear part
+SS_l = StochasticSystem();   fnl_l = {sptensor([n,n,n]),sptensor([n,n,n,n])};
+set(SS_l,'filterPSD',filterPSD,'linear',true)
+set(SS_l,'M',M,'C',C,'K',K,'fnl',fnl_l);
+set(SS_l.Options,'Emax',5,'Nmax',10,'notation','multiindex')
+set(SS_l.SSOptions,'ssMethod','indirect')
+SS_l.add_random_forcing(nRealization, T0, nPoints,outdof);
+S_l = SSM(SS_l);
+set(S_l.Options, 'reltol', 0.1,'notation','multiindex')
+S_l.choose_E(masterModes);
+S_l.ssmSEulerTimeDisp = false;
+[w_l,ssmPSD_l]=S_l.extract_PSD(PSDpair, order,'filter heun',freq_range,clusterRun);
 %%
-
-[w_linear, linear_analytic]=SS.compute_linear_PSD(PSDpair,freq_range);
-
-plot_ssm_lin_PSD(wss,ssmPSD,linear_analytic,order,PSDpair,freq_range,true)
-char1=['plotSSMEpsilon',num2str(epsilon),'.png'];
-saveas(gcf,char1)
-save('workShell.mat')
-
+% [w_linear, linear_analytic]=SS.compute_linear_PSD(PSDpair,freq_range);
+% 
+plot_ssm_lin_PSD(log(wss),20*log(ssmPSD),20*log(ssmPSD_l),order,PSDpair,log(freq_range),true)
 
