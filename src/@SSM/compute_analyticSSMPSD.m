@@ -17,7 +17,8 @@ Wnode = obj.E.adjointBasis';
     end
     
 for i=1:size(PSDpair,1)
-    
+    pp1 = PSDpair(i,1);
+    pp2 = PSDpair(i,2);
 switch obj.System.SSOptions.ssMethod
     case 'indirect'
         PSD = obj.System.filterPSD;
@@ -37,7 +38,7 @@ switch obj.System.SSOptions.ssMethod
                 Hw = (-w(j)^2*M+1i*w(j)*C+K);
                 Z_full = Hw\G11*Zj*G11'/(Hw');
 
-                X_l(i,j) = norm(Z_full(PSDpair(i,1),PSDpair(i,2)));
+                X_l(i,j) = norm(Z_full(pp1,pp2));
             else
                 X_l(i,j) = 0;
             end

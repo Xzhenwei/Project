@@ -40,5 +40,3 @@ addpath(fullfile(maindir, 'vonKarmanShell'));
 
 run vonKarmanShell.m
 end
-
-

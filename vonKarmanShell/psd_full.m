@@ -16,9 +16,9 @@ set(SS,'M',M,'C',C,'K',K,'fnl',fnl);
 set(SS.Options,'Emax',5,'Nmax',10,'notation','multiindex')
 set(SS.SSOptions,'ssMethod','indirect')
 
-nRealization=30;
+nRealization=20;
 T0=10; %% PSD frequency domain resolution is ~ 1/T0
-nPoints=2^11; %% control the accuracy of numerical differential equation
+nPoints=2^12; %% control the accuracy of numerical differential equation
 
 
 clusterRun=true; %% if the script is run on local or cluster.
