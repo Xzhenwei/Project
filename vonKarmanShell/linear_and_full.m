@@ -1,9 +1,8 @@
 function linear_and_full (epsilon)
 
-clear all; close all; clc
 
 nDiscretization = 10; % Discretization parameter 30 (#DOFs is proportional to the square of this number)
-epsilon = 0.1;
+% epsilon = 0.1;
 
 [M,C,K,fnl,outdof,out] = build_model(nDiscretization);
 n = length(M); % number of degrees of freedom
@@ -36,6 +35,14 @@ tic
 timeconsume = toc;
 char=['linearAnalyticEp',num2str(epsilon),'.mat'];
 save(char,'w_linear','linear_analytic','timeconsume');
+
+tic
+[w,outputPSD] = SS.monte_carlo_average(method,PSDpair,nRealization,clusterRun);
+time_sde=toc;
+disp(['Total number of ',num2str(nRealization),'# realization takes ',...
+    num2str(time_sde),' amount of time'])
+char=['FullEp',num2str(epsilon),'.mat'];
+save(char,'w','outputPSD','time_sde');
 
 
 

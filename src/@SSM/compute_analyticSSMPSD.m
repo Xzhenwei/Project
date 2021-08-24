@@ -1,4 +1,4 @@
-function [w, X_l] = compute_analyticSSMPSD(obj,PSDpair,freq_range)
+function [w, X_l] = compute_analyticSSMPSD(obj,PSDpair,freq_range ,clusterRun)
 N = obj.System.nPoints;
 T0 = obj.System.timeSpan;
 w = (1:N+1)*1/T0*2*pi;
@@ -9,7 +9,15 @@ Wnode = obj.E.adjointBasis';
     G11=G_tf(1:n,1:n);
     X_l=zeros(size(PSDpair,1),N+1);
     
+    if clusterRun
+        euler = parcluster('local');
+        pool = parpool(euler,24);
+    else
+        pool = parpool('local',2);
+    end
+    
 for i=1:size(PSDpair,1)
+    
 switch obj.System.SSOptions.ssMethod
     case 'indirect'
         PSD = obj.System.filterPSD;
@@ -19,21 +27,21 @@ switch obj.System.SSOptions.ssMethod
         S = PSD.S;
         G = PSD.G;
 
-        for j = 1:N + 1
+        parfor j = 1:N + 1
             if w(j) < 2*max(freq_range)
-                Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz); %% taking the 
+                Hw_z = (-w(j)^2*Mz+1i*w(j)*Cz+Kz); %% taking the 
                 %%% displacement of the auxilliary system
                 Phi_F = G*G'*S;
-                Zj = (-w(j)^2*Mz+1i*w(j)*Cz+Kz)\Phi_F*Hw_z.';
+                Zj = Hw_z\Phi_F/(Hw_z');
 
-                Hw = inv(-w(j)^2*M+1i*w(j)*C+K);
-                Z_full = (-w(j)^2*M+1i*w(j)*C+K)\G11*Zj*G11'*Hw';
+                Hw = (-w(j)^2*M+1i*w(j)*C+K);
+                Z_full = Hw\G11*Zj*G11'/(Hw');
 
                 X_l(i,j) = norm(Z_full(PSDpair(i,1),PSDpair(i,2)));
             else
                 X_l(i,j) = 0;
             end
-            disp([num2str((1-i/N)*100),' %'])
+%             disp([num2str((1-i/N)*100),' %'])
         end
     case 'direct'
        
@@ -45,7 +53,7 @@ switch obj.System.SSOptions.ssMethod
         
 end
 end
-    
+    pool.delete()
     
 
 

@@ -29,16 +29,16 @@ addpath(fullfile(maindir, 'src', 'psd'));
 
 addpath(fullfile(maindir, 'vonKarmanShell'));
 
-epsilon = 1;
-linear_and_full (epsilon)
-clear all;
-epsilon = 10;
-linear_and_full (epsilon)
-clear all;
-epsilon = 20;
-linear_and_full (epsilon)
+% epsilon = 1;
+% linear_and_full (epsilon)
+% clear all;
+% epsilon = 10;
+% linear_and_full (epsilon)
+% clear all;
+% epsilon = 20;
+% linear_and_full (epsilon)
 
-
+run vonKarmanShell.m
 end
 
 
