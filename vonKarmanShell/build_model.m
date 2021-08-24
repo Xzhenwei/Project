@@ -1,4 +1,4 @@
-function [M,C,K,fnl,fext, outdof,outdofvec] = build_model(nDiscretization)
+function [M,C,K,fnl, outdof,outdofvec] = build_model(nDiscretization)
 
 %% Finite Element Setup
 % Geometry
@@ -111,7 +111,6 @@ outdofvec = find(outdofvec);
 f_0 = MyAssembly.constrain_vector(MyAssembly.uniform_body_force());
 outdof = find(f_0);
 
-fext.data = forcing(length(M),f_0);
 end
 
 function [data] = forcing(n,f_0)

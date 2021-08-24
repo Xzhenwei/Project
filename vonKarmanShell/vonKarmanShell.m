@@ -23,7 +23,7 @@ nDiscretization = 10; % Discretization parameter 30 (#DOFs is proportional to th
 epsilon = 0.1;
 %% generate model
 
-[M,C,K,fnl,fext,outdof,out] = build_model(nDiscretization);
+[M,C,K,fnl,outdof,out] = build_model(nDiscretization);
 n = length(M); % number of degrees of freedom
 disp(['Number of degrees of freedom = ' num2str(n)])
 disp(['Phase space dimensionality = ' num2str(2*n)])
@@ -71,6 +71,9 @@ SS.add_random_forcing(nRealization, T0, nPoints,outdof);
 
 [V,D,W] = SS.linear_spectral_analysis();
 firts_res = abs(imag(D(1)));
+%%
+freq_range=[145 155];
+[w_linear,linear_analytic] = SS.compute_linear_PSD(PSDpair,freq_range,clusterRun);
 %% 
 % *Choose Master subspace (perform resonance analysis)*
 
@@ -81,7 +84,6 @@ masterModes = [1,2];
 S.choose_E(masterModes);
 %% PSD using SSMs
 % Obtaining *PSD* in reduced-polar coordinate
-
 order = 5; % Approximation order
 %% 
 S.ssmSEulerTimeDisp = false;
@@ -106,5 +108,5 @@ S_l.ssmSEulerTimeDisp = false;
 %%
 % [w_linear, linear_analytic]=SS.compute_linear_PSD(PSDpair,freq_range);
 % 
-plot_ssm_lin_PSD(log(wss),20*log(ssmPSD),20*log(ssmPSD_l),order,PSDpair,log([0 200]),true)
-
+omega.linear=wss; omega.w=wss; Gxx.Gss=ssmPSD; Gxx.linear_analytic=ssmPSD_l;
+plot_log_PSD(omega,Gxx,order,PSDpair,[140 160],false)
