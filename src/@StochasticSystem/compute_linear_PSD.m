@@ -6,10 +6,10 @@ M = obj.M; C = obj.C; K = obj.K;
 forcingdof = obj.forcingdof;
 
 N = obj.nPoints;
-T0 = obj.timeSpan * 1;
+T0 = obj.timeSpan ;
 w = (1:N+1)*1/T0*2*pi;
 nOutput = size(PSDpair,1);
-linear_analytic=zeros(nOutput , N+1);
+linear_analytic = zeros(nOutput , N+1);
 
     if clusterRun
         euler = parcluster('local');

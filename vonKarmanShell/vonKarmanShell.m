@@ -119,12 +119,13 @@ semilogy(w_linear,linear_analytic)
 hold on
 semilogy(wss, ssmPSD)
 xlim([130 160])
-char=['shellEp',num2str(epsilon),'Time',num2str(T0),'.mat'];
-save(char,'-mat')
+% char=['shellEp',num2str(epsilon),'Time',num2str(T0),'.mat'];
+% save(char,'-mat')
 %%
-plot(w,outputPSD)
-hold on 
-plot(w_linear,linear_analytic)
+plot(w,outputPSD,'Displayname','full')
 hold on
-plot(wss, ssmPSD)
+plot(w_linear,linear_analytic,'Displayname','analytic')
+hold on
+plot(wss, ssmPSD,'Displayname','SSM')
 xlim([120 160])
+legend
