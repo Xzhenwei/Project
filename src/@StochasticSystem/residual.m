@@ -12,7 +12,8 @@ function [ r, drdqdd,drdqd,drdq, c0] = residual(obj, q, qd, qdd, t)
 % $\mathbf{r}(\ddot{\mathbf{q}},\dot{\mathbf{q}},\mathbf{q}) = \mathbf{M}\ddot{\mathbf{q}} 
 % + \mathbf{C}\dot{\mathbf{q}} + \mathbf{F}(\mathbf{q}) - \mathbf{F}_{ext}(t)$.
 
-assert(obj.order == 2, ' residual can only be computed for second-order systems')
+% assert(obj.order == 2, ' residual can only be computed for second-order systems')
+obj.order = 2; % only use 2nd order
 
 F_elastic = obj.K * q + obj.compute_fnl(q,qd);
 

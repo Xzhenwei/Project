@@ -22,8 +22,8 @@ for i=1:N
     
     error1 = 1e8;
     iter = 0;
-%     Zf = v(:,i+1); % taking velocity
-    Zf = z(:,i+1); % taking displacement
+    Zf = v(:,i+1); % taking velocity
+%     Zf = z(:,i+1); % taking displacement
     while error1 > tol
         F = p(:,i+1)-p(:,i)-expand_coefficients(R0,m, p(:,i+1))*detT-Wnode*Gs*Zf*detT;
         Jp = compute_J_R0(R0,m, p(:,i+1))*detT;

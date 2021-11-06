@@ -26,7 +26,9 @@ for i=1:N
     z(:,i+1)=z(:,i)+detT*vbar;
     v(:,i+1)=v(:,i)-M\(detT*(C*vbar+K*zbar)+detu); 
     
-    p(:,i+1)=p(:,i)+expand_coefficients(R0,m, pbar)*detT+Wnode*Gs*zbar*detT; % taking disp
+%     p(:,i+1)=p(:,i)+expand_coefficients(R0,m, pbar)*detT+Wnode*Gs*zbar*detT; % taking disp
+    p(:,i+1)=p(:,i)+expand_coefficients(R0,m, pbar)*detT+Wnode*Gs*vbar*detT; % taking vel
+
     %% update
     if norm(p(:,1))>1e20
         error('narrowing time step')

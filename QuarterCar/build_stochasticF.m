@@ -1,4 +1,4 @@
-function [PSD,forcingDof,IC,stochastic_f] = build_stochasticF(n,nPoints,epsilon)
+function [samplePSD,forcingDof,IC,stochastic_f] = build_stochasticF(n,nPoints,epsilon)
 Mi=[5,0;0,5];
 Ci=[110,10;10,110];
 Ki=[20,0;0,20];
@@ -9,7 +9,7 @@ PSD.Kz=Ki;
 PSD.S=Si; % random forcing parameters subject to intensity
 PSD.G=zeros(n,2); 
 %%%%%%%%
-omega=linspace(0,200,nPoints+1);
+omega=linspace(0,100,nPoints+1);
 
 PSD1 = epsilon^2 * 50 ./ (omega.^5) .* exp(-400./(omega.^4)) ; PSD1(1) = 0;
 

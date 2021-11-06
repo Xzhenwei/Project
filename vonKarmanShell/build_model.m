@@ -6,7 +6,7 @@ function [M,C,K,fnl, outdof,outdofvec] = build_model(nDiscretization)
 l  = 1; % length of domain [m]
 b = 2; % breadth of domain [m]
 t = 1e-2; % thickness of plate [m]
-w = 1e-1; % curvature parameter (height of the midpoint relative to ends) [m]
+w = 0; % curvature parameter (height of the midpoint relative to ends) [m]
 % material properties
 E       = 70e9;  % 70e9 % 200e9 % Young's modulus [Pa]
 rho     = 2700; % 2700 % 7850 % density [kg/m^3]

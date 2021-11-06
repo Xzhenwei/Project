@@ -1,4 +1,4 @@
-function [PSD, stochastic_f] = build_stochasticF(outdof, n, epsilon)
+function [PSD] = build_stochasticF(outdof, n, epsilon)
 Mi=5;
 Ci=100;
 Ki=20;
@@ -18,4 +18,4 @@ end
 
 PSD.G=G;
 
-stochastic_f=true; % automatically to be true unless specified
+% stochastic_f=true; % automatically to be true unless specified

@@ -7,9 +7,9 @@ function [M,C,K]=L_QuarterCar_Model(n)
 
 m1=2;
 m2=3;
-c=160;
-k1=500;
-k2=640;
+c=600;
+k1=1600;
+k2=1500;
 Ce=[c -c;-c c];
 Ke=[k2 -k2;-k2 k2];
 L=ones(n,1)*m1;  L(end)=m2;

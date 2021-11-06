@@ -3,6 +3,7 @@ classdef SSOptions < matlab.mixin.SetGet
     properties
         ssMethod
         outDOF = []; % output degree of freedom
+        tol
         
     end
     methods
@@ -16,6 +17,10 @@ classdef SSOptions < matlab.mixin.SetGet
                 otherwise
                     error('Unknown stochastic input type: set direct or indirect method types')
             end
+        end
+        
+        function set.tol(obj,Tol)
+            obj.tol = Tol;
         end
         
     end

@@ -9,12 +9,6 @@ Wnode = obj.E.adjointBasis';
     G11=G_tf(1:n,1:n);
     X_l=zeros(size(PSDpair,1),N+1);
     
-    if clusterRun
-        euler = parcluster('local');
-        pool = parpool(euler,24);
-    else
-        pool = parpool('local',2);
-    end
     
 for i=1:size(PSDpair,1)
     pp1 = PSDpair(i,1);
@@ -27,35 +21,75 @@ switch obj.System.SSOptions.ssMethod
         Kz = PSD.Kz;
         S = PSD.S;
         G = PSD.G;
+        if obj.System.n > 30
+                euler = parcluster('local');
+                pool = parpool(euler);
+        
+            parfor j = 1:N + 1
+                if w(j) < 2*max(freq_range)
+                    Hw_z = (-w(j)^2*Mz+1i*w(j)*Cz+Kz); %% taking the 
 
-        parfor j = 1:N + 1
-            if w(j) < 2*max(freq_range)
-                Hw_z = (-w(j)^2*Mz+1i*w(j)*Cz+Kz); %% taking the 
-                %%% displacement of the auxilliary system
-                Phi_F = G*G'*S;
-                Zj = Hw_z\Phi_F/(Hw_z');
+                    Phi_F = G*G'*S;
+    %                 Zj = Hw_z\Phi_F/(Hw_z'); %%% displacement 
+                    Zj = 1i*w(j)*Hw_z\Phi_F/(Hw_z')*1i*w(j);%%% vel
 
-                Hw = (-w(j)^2*M+1i*w(j)*C+K);
-                Z_full = Hw\G11*Zj*G11'/(Hw');
+                    Hw = (-w(j)^2*M+1i*w(j)*C+K);
+                    Z_full = Hw\G11*Zj*G11'/(Hw');
 
-                X_l(i,j) = norm(Z_full(pp1,pp2));
-            else
-                X_l(i,j) = 0;
+                    X_l(i,j) = norm(Z_full(pp1,pp2));
+                else
+                    X_l(i,j) = 0;
+                end
+    %             disp([num2str((1-i/N)*100),' %'])
             end
+        
+        else
+            for j = 1:N + 1
+                if w(j) < 2*max(freq_range)
+                    Hw_z = (-w(j)^2*Mz+1i*w(j)*Cz+Kz); %% taking the 
+
+                    Phi_F = G*G'*S;
+    %                 Zj = Hw_z\Phi_F/(Hw_z'); %%% displacement 
+                    Zj = 1i*w(j)*Hw_z\Phi_F/(Hw_z')*1i*w(j);%%% vel
+
+                    Hw = (-w(j)^2*M+1i*w(j)*C+K);
+                    Z_full = Hw\G11*Zj*G11'/(Hw');
+
+                    X_l(i,j) = norm(Z_full(pp1,pp2));
+                else
+                    X_l(i,j) = 0;
+                end
 %             disp([num2str((1-i/N)*100),' %'])
+            end
         end
+            pool.delete()
     case 'direct'
-       
-%         obj.input.omega=obj.samplePSD(2,:); STILL NEED TO FIX FOR DIRECT
-%         obj.input.PSD=obj.samplePSD(1,:);
+        forcingdof = obj.System.forcingdof ;
+                w = obj.System.samplePSD(2,:);
+                nOmega = length(w);
+                Zj = zeros(obj.System.n,obj.System.n);
+                for j = 1:nOmega 
+                    for l = 1:length(forcingdof)
+                        Zj(forcingdof(l),forcingdof(l)) = obj.System.samplePSD(1,j);
+                    end
+                    if w(j) < 2*max(freq_range)
+
+                        Hw = (-w(j)^2*M+1i*w(j)*C+K);
+                        Z_full = Hw\G11*Zj*G11'/(Hw');
+
+                        X_l(i,j) = norm(Z_full(pp1,pp2));
+                    else
+                        X_l(i,j) = 0;
+                    end
+                    
+                end
         
     otherwise
         error('please specify an input PSD')
         
 end
 end
-    pool.delete()
-    
+
 
 
 end

@@ -2,8 +2,6 @@ classdef StochasticSystem < DynamicalSystem
     
     
     properties
-%         System      % dynamical system object
-%         SSM         % SSM object
 
         filterPSD = []      % input PSD defined by Linear SYSTEM
         samplePSD = []      % input PSD defined by sampled PSD
@@ -20,34 +18,15 @@ classdef StochasticSystem < DynamicalSystem
         gFactor = 1; % this is the factor used in indirect process generation
         Fsto = [] % an vector of stochastic forcing realization
         
-        sdeImpTimeDisp = true;
+        sdeImpTimeDisp = false;
         
         SSOptions = SSOptions()
+        
     end
     
 
 
     methods
-        %% Constructor
-%         function obj = StochasticSystem(ClassInput,ClassType)
-%             %STOCHASTIC Construct an instance of this class
-%             %   Detailed explanation goes here
-%             switch lower(ClassType)
-%                 case 'system'
-%                     obj.System = ClassInput;        
-%                 case 'ssm'
-%                     obj.SSM = ClassInput;
-%             end
-%         end
-
-        %% SET methods
-
-        
-%         %% GET methods        
-%         function N = get.dimSystem(obj)
-%             N = obj.System.N;
-%         end
-%         
 
         
         %% other methods
@@ -72,15 +51,12 @@ classdef StochasticSystem < DynamicalSystem
 
         [w,PHI]=sde_solver(obj,SDEmethod,PowerSpectralPair)
         
-        [w,linear_analytic]=compute_linear_PSD(obj,PSDpair,freq_range,clusterRun)
+        [w,linear_analytic]=compute_linear_PSD(obj,PSDpair,freq_range)
         
         [w,PSD] = monte_carlo_average(obj,method,PSDpair,nRealization,clusterRun)
         
         input_PSD(obj)
-        %%% SSM
-%         PSD = extract_PSD(obj, parRange, order, method)
-%         
-%         p=indirect_Euler_SSM(obj, nPoints, timeSpan, PSD, dimFilter, dimManifold, Wnode, R0)
+
     end
 end
 

@@ -20,6 +20,7 @@ Cy = zeros(nPSDpairs,N+1);
                     [X,V] = implicit_Mid_Point(obj,N,T0,PSD);
                 case "filterHeun"
             %Forward Heun's method
+            %%% not recommended unless small dimension
                     obj.Fsto = obj.generate_stochastic();
                     PSD = obj.filterPSD;
 
@@ -33,17 +34,18 @@ Cy = zeros(nPSDpairs,N+1);
                     % Modal linear Residual evaluation function handle
                     Residual_sto = @(q,qd,qdd,t)residual(obj,q,qd,qdd,t);
                     % time integration
+                    TI_sto.tol = obj.SSOptions.tol;
                     TI_sto.Integrate(X0,V0,A0,T0,Residual_sto);
-                    X=TI_sto.Solution.q;
+                    X = TI_sto.Solution.q;
              end
 % SpecDensPair indicates the power spectral density. format ie:
 % [1,1;2,2;3,3] meaning we want to calculate PSD of x1, x2,x3 respectively
         
         for j=1:nPSDpairs
-            [w,Cy(j,:)]=crossPSDestimator(X(PowerSpectralPair(j,1),:),X(PowerSpectralPair(j,2),:),T);
+            [w,Cy(j,:)] = crossPSDestimator(X(PowerSpectralPair(j,1),:),X(PowerSpectralPair(j,2),:),T);
         end
         
-        outputPSD=Cy;
+        outputPSD = Cy;
 end
 
 function [w,Gxy]=crossPSDestimator(x,y,t)
@@ -51,13 +53,13 @@ function [w,Gxy]=crossPSDestimator(x,y,t)
 %%%% numebr of sampling points 
 N = length(x); 
 %%%% time period of generation
-T0=max(t);
+T0 = max(t);
 %%%% sampling frequency, time spacing
-f0=1/T0; 
+f0 = 1/T0; 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Cx=fft(x)/N;Cy=fft(y)/N;Cys=conj(Cy);
+Cx = fft(x)/N; Cy = fft(y)/N; Cys = conj(Cy);
 
-Gxy=T0*(Cx.*Cys)/2/pi;
-w=(1:length(Cx))*f0*2*pi;
+Gxy = T0*(Cx.*Cys)/2/pi;
+w = (1:length(Cx))*f0*2*pi;
 
 end

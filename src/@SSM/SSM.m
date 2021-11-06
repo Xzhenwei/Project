@@ -8,7 +8,9 @@ classdef SSM < Manifold
        PSDOptions = PSDOptions();
        
        ssmSEulerTimeDisp = true;
-       
+       tol = 1e-9;
+       w_l = [];
+       X_l = [];
     end
     
     methods
@@ -27,7 +29,7 @@ classdef SSM < Manifold
         
         [wss,Gss] = extract_PSD(obj, PSDpair, ORDER, method, freq_range, clusterRun)
         
-        [w, X_l] = compute_analyticSSMPSD(obj,PSDpair,freq_range ,clusterRun)
+        [w_l, X_l] = compute_analyticSSMPSD(obj,PSDpair,freq_range ,clusterRun)
     end
 end
 

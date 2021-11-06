@@ -19,8 +19,8 @@ clear all; close all; clc
 %% 
 % *system parameters*
 
-nDiscretization = 10; % Discretization parameter 30 (#DOFs is proportional to the square of this number)
-epsilon = 5e-2;
+nDiscretization = 3; % Discretization parameter 30 (#DOFs is proportional to the square of this number)
+epsilon = 0.02;
 %% generate model
 
 [M,C,K,fnl,outdof,out] = build_model(nDiscretization);
@@ -28,7 +28,7 @@ n = length(M); % number of degrees of freedom
 disp(['Number of degrees of freedom = ' num2str(n)])
 disp(['Phase space dimensionality = ' num2str(2*n)])
 %%
-[filterPSD, stochastic_f] = build_stochasticF(outdof,n,epsilon);
+[filterPSD] = build_stochasticF(outdof,n,epsilon);
 %% Dynamical system setup 
 % We consider the forced system
 % 
@@ -49,11 +49,11 @@ SS = StochasticSystem();
 set(SS,'filterPSD',filterPSD,'linear',false)
 set(SS,'M',M,'C',C,'K',K,'fnl',fnl);
 set(SS.Options,'Emax',5,'Nmax',10,'notation','multiindex')
-set(SS.SSOptions,'ssMethod','indirect')
+set(SS.SSOptions,'ssMethod','indirect','tol',1e-12)
 % set(DS.Options,'Emax',5,'Nmax',10,'notation','tensor')
-nRealization=20;
-T0=15; %% PSD frequency domain resolution is ~ 1/T0
-nPoints=2^12; %% control the accuracy of numerical differential equation
+nRealization = 2;
+T0 = 30; %% PSD frequency domain resolution is ~ 1/T0
+nPoints = 2^16; %% control the accuracy of numerical differential equation
 %% 
 % We assume periodic forcing of the form
 % 
@@ -61,71 +61,63 @@ nPoints=2^12; %% control the accuracy of numerical differential equation
 % + \frac{\mathbf{f}_0}{2}e^{-i\phi}  $$
 % 
 %%%%%%%% Above is forcing setting and set to DynamicalSystem class
-clusterRun = true; %% if the script is run on local or cluster.
-method = "filter ImplicitMidPoint";
-PSDpair=[out,out];
+clusterRun = false; %% if the script is run on local or cluster.
+method = "Newmark";
+PSDpair = [out,out];
 
 SS.add_random_forcing(nRealization, T0, nPoints,outdof);
 
-%% Linear Modal analysis and SSM setup
+%% Linear Modal analysis and SDE
 [V,D,W] = SS.linear_spectral_analysis();
 firts_res = abs(imag(D(1)));
+SS.sdeImpTimeDisp = false;
 tic
 [w,outputPSD] = SS.monte_carlo_average(method,PSDpair,nRealization,clusterRun);
-time_sde=toc;
+time_sde = toc;
 disp(['Total number of ',num2str(nRealization),'# realization takes ',...
     num2str(time_sde),' amount of time'])
 %% Linear Analytic
-freq_range=[145 155];
-[w_linear,linear_analytic] = SS.compute_linear_PSD(PSDpair,freq_range,clusterRun);
+freq_range = [30 55];
+[w_linear,linear_analytic] = SS.compute_linear_PSD(PSDpair,freq_range);
+%%
+plot(w_linear,linear_analytic)
+xlim([0 50])
 %%
 % *Choose Master subspace (perform resonance analysis)*
 
 S = SSM(SS);
 set(S.Options, 'reltol', 0.1,'notation','multiindex')
 set(S.PSDOptions, 'nPointfilter', 8)
-masterModes = [1,2]; 
+masterModes = [1,2];
 S.choose_E(masterModes);
-%% PSD using SSMs
-% Obtaining *PSD* in reduced-polar coordinate
 order = 5; % Approximation order
-%% 
+%%
 S.ssmSEulerTimeDisp = false;
 tic
-[wss,ssmPSD]=S.extract_PSD(PSDpair, order,'filter heun',freq_range,clusterRun);
-time_ssm=toc;
+[wss,ssmPSD] = S.extract_PSD(PSDpair, order,'filter heun',freq_range,clusterRun);
+time_ssm = toc;
 disp([num2str(time_ssm),' amount of time'])
-%% Linear part
-% SS_l = StochasticSystem();   fnl_l = {sptensor([n,n,n]),sptensor([n,n,n,n])};
-% set(SS_l,'filterPSD',filterPSD,'linear',true)
-% set(SS_l,'M',M,'C',C,'K',K,'fnl',fnl_l);
-% set(SS_l.Options,'Emax',5,'Nmax',10,'notation','multiindex')
-% set(SS_l.SSOptions,'ssMethod','indirect')
-% SS_l.add_random_forcing(nRealization, T0, nPoints,outdof);
-% S_l = SSM(SS_l);
-% set(S_l.Options, 'reltol', 0.1,'notation','multiindex')
-% S_l.choose_E(masterModes);
-% S_l.ssmSEulerTimeDisp = false;
-% [w_l,ssmPSD_l]=S_l.extract_PSD(PSDpair, order,'filter heun',freq_range,clusterRun);
 %%
-% [w_linear, linear_analytic]=SS.compute_linear_PSD(PSDpair,freq_range);
-% 
-% omega.linear=w_linear; omega.w=wss; Gxx.Gss=ssmPSD_l; Gxx.linear_analytic=linear_analytic;
-% plot_log_PSD(omega,Gxx,order,PSDpair,[140 160],false)
+clear omega
+clear Gxx
+omega.w = w; Gxx.Gfull = outputPSD;%outputPSD;
+omega.linear = w_linear; Gxx.linear_analytic = linear_analytic;
+omega.wss = wss; Gxx.Gss = ssmPSD ;
+omega.w_full_linear = w_l; Gxx.full_linear = outputPSD_l;
+
+plot_log_PSD(omega,Gxx,order,PSDpair,[1 50],true)
+
 %%
-semilogy(w,outputPSD)
-hold on 
-semilogy(w_linear,linear_analytic)
-hold on
-semilogy(wss, ssmPSD)
-xlim([130 160])
-% char=['shellEp',num2str(epsilon),'Time',num2str(T0),'.mat'];
-% save(char,'-mat')
-%%
-plot(w,outputPSD,'Displayname','full')
-hold on
-plot(w_linear,linear_analytic,'Displayname','analytic')
-hold on
-plot(wss, ssmPSD,'Displayname','SSM')
-xlim([120 160])
-legend
+% char=[num2str(nDiscretization),'nonlinEpsilon',num2str(epsilon),'T',num2str(T0),'nP',num2str(log(nPoints)/log(2)),'.mat'];
+% save(char)
+% ENHANCED MONTE CARLO/ Table of computational times for each examples.
+% write a master script
+
+% epsilon 0.1-0.25s
+
+% figure
+% plot(w1,outputPSD1,'Displayname','imp')
+% hold on
+% plot(w2,outputPSD2,'Displayname','heun')
+% xlim([120 160])
+% legend
