@@ -6,7 +6,7 @@ classdef StochasticSystem < DynamicalSystem
         filterPSD = []      % input PSD defined by Linear SYSTEM
         samplePSD = []      % input PSD defined by sampled PSD
         input
-        
+        inputForcingType
         linear              % if model is linear
         nRealization 
         timeSpan
@@ -55,7 +55,11 @@ classdef StochasticSystem < DynamicalSystem
         
         [w,PSD] = monte_carlo_average(obj,method,PSDpair,nRealization,clusterRun)
         
-        input_PSD(obj)
+        [w,Gz] = galerkin_proj (obj, V, PSD, SDEmethod, PSDpair)
+        
+        [w_galerkin, PSD_galerkin] = monte_carlo_galerkin(obj, method, PSDpair)
+        
+%         input_PSD(obj)
 
     end
 end

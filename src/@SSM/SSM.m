@@ -7,7 +7,7 @@ classdef SSM < Manifold
        FRCOptions = FRCOptions();
        PSDOptions = PSDOptions();
        
-       ssmSEulerTimeDisp = true;
+       ssmSEulerTimeDisp = false;
        tol = 1e-9;
        w_l = [];
        X_l = [];

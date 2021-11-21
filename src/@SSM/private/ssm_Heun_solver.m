@@ -1,4 +1,4 @@
-function p=ssm_Heun_solver(obj, N,T0,PSD,f,m,Wnode,R0) %% change the name 
+function p=ssm_Heun_solver(obj, N,T0,PSD,f,m,Wnode,R0, inputForcingType) %% change the name 
     % l is the dim of manifold, n is dim of system, f= dim of filter;
 
 detT=T0/N;
@@ -25,10 +25,13 @@ for i=1:N
     
     z(:,i+1)=z(:,i)+detT*vbar;
     v(:,i+1)=v(:,i)-M\(detT*(C*vbar+K*zbar)+detu); 
+    switch inputForcingType
+        case 'disp'
+            p(:,i+1)=p(:,i)+expand_coefficients(R0,m, pbar)*detT+Wnode*Gs*zbar*detT; % taking disp
+        case 'vel'
+            p(:,i+1)=p(:,i)+expand_coefficients(R0,m, pbar)*detT+Wnode*Gs*vbar*detT; % taking vel
+    end
     
-%     p(:,i+1)=p(:,i)+expand_coefficients(R0,m, pbar)*detT+Wnode*Gs*zbar*detT; % taking disp
-    p(:,i+1)=p(:,i)+expand_coefficients(R0,m, pbar)*detT+Wnode*Gs*vbar*detT; % taking vel
-
     %% update
     if norm(p(:,1))>1e20
         error('narrowing time step')

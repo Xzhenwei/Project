@@ -77,7 +77,7 @@ hold off
 
 outnode = 1:nElements;
 outdof = outnode*3-1; % transverse direction
-disp(['Assigning external force vector at [',num2str(outnode),'] th element in transverse direction'])
+% disp(['Assigning external force vector at [',num2str(outnode),'] th element in transverse direction'])
 
 % outdofvec = sparse(outdof,ones(size(outdof)),1,MyMesh.nDOFs,1);
 % outdofvec = MyAssembly.constrain_vector(outdofvec);

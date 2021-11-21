@@ -14,7 +14,7 @@ m = obj.dimManifold;
 % order to capture the high frequency information
 nPointfilter = obj.PSDOptions.nPointfilter;
 tol = obj.tol;
-num_points = obj.System.nPoints*2^2*nPointfilter; % 3 or higher when filter was used.
+num_points = obj.System.nPoints*nPointfilter; % 3 or higher when filter was used.
 
 T = obj.System.timeSpan;
 p0 = sparse(m,1);
@@ -23,7 +23,7 @@ detT = T/num_points; t = 0:detT:T;
 
 Wnode = obj.E.adjointBasis';
 
-n = obj.System.n;
+n = obj.System.n; inputForcingType = obj.System.inputForcingType;
 
 nOutput = size(PSDpair,1);
 %%
@@ -38,8 +38,7 @@ Gzz = zeros(nOutput,num_points+1);
                 PSD = obj.System.filterPSD;
                 Mz = PSD.Mz;
                 f = length(Mz);
-                p = ssm_Implicit_solver(obj, num_points,T,PSD,f,m,Wnode,R0);
-        %         p=ssm_Heun_solver(obj, num_points,T,PSD,f,m,Wnode,R0);
+                p = ssm_Implicit_solver(obj, num_points,T,PSD,f,m,Wnode,R0,inputForcingType);
 
                 z1 = zeros(1,length(p)); z2 = z1;
                 for i=1:length(p)
@@ -47,15 +46,15 @@ Gzz = zeros(nOutput,num_points+1);
                     z1(i) = AS(PSDpair(j,1));
                     z2(i) = AS(PSDpair(j,2));
                 end
-                z1 = z1 + x0Realization ;
-                z2 = z2 + x0Realization ;
+%                 z1 = z1 + x0Realization ;
+%                 z2 = z2 + x0Realization ;
                 [w,Gz]=crossPSDestimator(z1,z2,t);
                 Gzz(j,:) = Gz;
             case 'filter heun'
                 PSD = obj.System.filterPSD;
                 Mz = PSD.Mz;
                 f = length(Mz);
-                p = ssm_Heun_solver(obj, num_points,T,PSD,f,m,Wnode,R0);
+                p = ssm_Heun_solver(obj, num_points,T,PSD,f,m,Wnode,R0,inputForcingType);
 
                 z1 = zeros(1,length(p)); z2 = z1;
                 for i = 1:length(p)
@@ -63,8 +62,8 @@ Gzz = zeros(nOutput,num_points+1);
                     z1(i) = AS(PSDpair(j,1));
                     z2(i) = AS(PSDpair(j,2));
                 end
-                z1 = z1 + x0Realization ;
-                z2 = z2 + x0Realization ;
+%                 z1 = z1 + x0Realization ;
+%                 z2 = z2 + x0Realization ;
                 [w,Gz] = crossPSDestimator(z1,z2,t);
                 Gzz(j,:) = Gz;
 

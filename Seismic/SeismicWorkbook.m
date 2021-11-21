@@ -1,7 +1,7 @@
 n = 10;
 m = 7;
-k = 300;
-c = 52;
+k = 4555;
+c = 90;
 kappa2 = 0;
 kappa3 = 1.5;
 
@@ -14,7 +14,7 @@ epsilon=1e-1; %% forcing magnitude
 %%%%%%%%
 SS = StochasticSystem();
 
-set(SS,'filterPSD',filterPSD,'linear',true)
+set(SS,'filterPSD',filterPSD,'linear',false)
 set(SS,'M',M,'C',C,'K',K,'fnl',fnl,'gFactor',-m);
 set(SS.Options,'Emax',5,'Nmax',10,'notation','multiindex')
 set(SS.SSOptions,'ssMethod','indirect')
@@ -34,26 +34,26 @@ time_sde=toc;
 disp(['Total number of ',num2str(nRealization),'# realization takes ',...
     num2str(time_sde),' amount of time'])
 %%
-
+[w_linear, linear_analytic]=SS.compute_linear_PSD(PSDpair,freq_range);
 %% SSM setting
 S = SSM(SS);
 set(S.Options, 'reltol', 0.1,'notation','multiindex')
+set(S.PSDOptions, 'nPointfilter', 0.5)
 masterModes = [1,2];
 S.choose_E(masterModes);
 order = 5; % SSM approximation order
 %%
 tic
-[wss,ssmPSD]=S.extract_PSD(PSDpair, order,'fil',clusterRun);
+[wss,ssmPSD] = S.extract_PSD(PSDpair, order,'filter',freq_range,clusterRun);
 time_ssm=toc;
 disp([num2str(time_ssm),' amount of time'])
+
 %%
-figure
-plot(wss,ssmPSD,'linewidth',1,'DisplayName','SSM')
-hold on
-plot(w,outputPSD(1,:),'linewidth',1,'DisplayName','Full System Simulation')
-hold on
-% plot(w,linear_analytic(n,:),'linewidth',1,'DisplayName','linear analytic')
-% % xline(firts_res,'-',{'First Resonance'},'linewidth',1.5);
-legend
-xlim([0,10]);
-grid on
+clear omega
+clear Gxx
+omega.w = w; Gxx.Gfull = outputPSD;%outputPSD;
+omega.linear = w_linear; Gxx.linear_analytic = linear_analytic;
+omega.wss = wss; Gxx.Gss = ssmPSD;
+omega.w_galerkin = w_galerkin; Gxx.galerkin = PSD_galerkin;
+
+plot_log_PSD(omega,Gxx,order,PSDpair,[0 8],false)

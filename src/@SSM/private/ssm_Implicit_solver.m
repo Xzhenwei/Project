@@ -1,4 +1,4 @@
-function p=ssm_Implicit_solver(obj, N,T0,PSD,f,m,Wnode,R0) %% change the name 
+function p=ssm_Implicit_solver(obj, N,T0,PSD,f,m,Wnode,R0,inputForcingType) %% change the name 
     % l is the dim of manifold, n is dim of system, assmue 1-dim filter;
 
 maxiter=1000; tol=1e-10;
@@ -22,8 +22,13 @@ for i=1:N
     
     error1 = 1e8;
     iter = 0;
-    Zf = v(:,i+1); % taking velocity
-%     Zf = z(:,i+1); % taking displacement
+    switch inputForcingType
+        case 'disp'
+            Zf = z(:,i+1); % taking displacement
+        case 'vel'
+            Zf = v(:,i+1); % taking velocity
+    end
+    
     while error1 > tol
         F = p(:,i+1)-p(:,i)-expand_coefficients(R0,m, p(:,i+1))*detT-Wnode*Gs*Zf*detT;
         Jp = compute_J_R0(R0,m, p(:,i+1))*detT;
@@ -44,6 +49,7 @@ for i=1:N
     if norm(z(:,i+1))>1e10
         error('narrowing time step')
     end
+
     if display
         disp(['time integration completed: ', num2str(i/N*100), '%']) 
     end

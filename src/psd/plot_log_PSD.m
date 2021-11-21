@@ -29,6 +29,14 @@ else
     dispFullLin = false;
 end
 
+if isfield(Gxx,'galerkin')
+    dispgalerkin = true;
+    G_galerkin = Gxx.galerkin;
+    w_galerkin = omega.w_galerkin;
+else
+    dispgalerkin = false;
+end
+k = 1;
 
 xlab = '$\omega$ Frequency';
 ylab = 'Power';
@@ -50,19 +58,28 @@ nOutDof = size(Gss,1)/numel(ORDER);
             end
             
             if dispAnaly
-                plot(w_linear,20*log(linear_analytic(i,:)),'Color',colors(j+2,:),'linewidth',linewidth,...
+                plot(w_linear,20*log(linear_analytic(i,:)),'Color',colors(j+k,:),'linewidth',linewidth,...
                     'DisplayName','linear system analytic')
                 add_labels(xlab,'Power(dB)')
+                k = k+1;
             end
             
             if dispFull
-                plot(w_full,20*log(G_full(i,:)),'Color',colors(j+3,:),'linewidth',linewidth,...
+                plot(w_full,20*log(G_full(i,:)),'Color',colors(j+k,:),'linewidth',linewidth,...
                 'DisplayName','Full system response')
+                k = k+1;
             end
             
             if dispFullLin
-                plot(w_full_lin,20*log(G_full_lin(i,:)),'Color',colors(j+4,:),'linewidth',linewidth,...
+                plot(w_full_lin,20*log(G_full_lin(i,:)),'Color',colors(j+k,:),'linewidth',linewidth,...
                 'DisplayName','Full linear system response')
+                k = k+1;
+            end
+            
+            if dispgalerkin
+                plot(w_galerkin,20*log(G_galerkin(i,:)),'Color',colors(j+k,:),'linewidth',linewidth,...
+                'DisplayName','Galerkin projection method')
+                k = k+1;
             end
             add_labels(xlab,'Power(dB)')
         else
@@ -76,20 +93,29 @@ nOutDof = size(Gss,1)/numel(ORDER);
             end
             
             if dispAnaly
-                plot(w_linear,(linear_analytic(i,:)),'Color',colors(j+2,:),'linewidth',linewidth,...
+                plot(w_linear,(linear_analytic(i,:)),'Color',colors(j+k,:),'linewidth',linewidth,...
                     'DisplayName','linear system analytic')
-                add_labels(xlab,ylab)
+                k = k+1;
             end
             
             if dispFull
-                plot(w_full,(G_full(i,:)),'Color',colors(j+3,:),'linewidth',linewidth,...
+                plot(w_full,(G_full(i,:)),'Color',colors(j+k,:),'linewidth',linewidth,...
                 'DisplayName','Full system response')
+                k = k+1;
             end
             %%%
             if dispFullLin
-                plot(w_full_lin,(G_full_lin(i,:)),'Color',colors(j+4,:),'linewidth',linewidth,...
+                plot(w_full_lin,(G_full_lin(i,:)),'Color',colors(j+k,:),'linewidth',linewidth,...
                 'DisplayName','Full linear system response')
+                k = k+1;
             end
+            
+            if dispgalerkin
+                plot(w_galerkin,(G_galerkin(i,:)),'Color',colors(j+k,:),'linewidth',linewidth,...
+                'DisplayName','Galerkin projection method')
+                k = k+1;
+            end
+            add_labels(xlab,ylab)
         end
         title (['PSD of Dof (',num2str(x1),', ',num2str(x2),')'])
         

@@ -1,6 +1,7 @@
 function [w, X_l] = compute_analyticSSMPSD(obj,PSDpair,freq_range ,clusterRun)
 N = obj.System.nPoints;
 T0 = obj.System.timeSpan;
+inputForcingType = obj.System.inputForcingType;
 w = (1:N+1)*1/T0*2*pi;
 Wnode = obj.E.adjointBasis';
     B=obj.System.B; M=obj.System.M; C=obj.System.C; K=obj.System.K; 
@@ -21,7 +22,7 @@ switch obj.System.SSOptions.ssMethod
         Kz = PSD.Kz;
         S = PSD.S;
         G = PSD.G;
-        if obj.System.n > 30
+        if obj.System.n > 100
                 euler = parcluster('local');
                 pool = parpool(euler);
         
@@ -30,8 +31,12 @@ switch obj.System.SSOptions.ssMethod
                     Hw_z = (-w(j)^2*Mz+1i*w(j)*Cz+Kz); %% taking the 
 
                     Phi_F = G*G'*S;
-    %                 Zj = Hw_z\Phi_F/(Hw_z'); %%% displacement 
-                    Zj = 1i*w(j)*Hw_z\Phi_F/(Hw_z')*1i*w(j);%%% vel
+                    switch inputForcingType
+                        case 'disp'
+                            Zj = Hw_z\Phi_F/(Hw_z'); %%% displacement 
+                        case 'vel'
+                            Zj = 1i*w(j)*Hw_z\Phi_F/(Hw_z')*1i*w(j);%%% vel
+                    end
 
                     Hw = (-w(j)^2*M+1i*w(j)*C+K);
                     Z_full = Hw\G11*Zj*G11'/(Hw');
@@ -40,18 +45,21 @@ switch obj.System.SSOptions.ssMethod
                 else
                     X_l(i,j) = 0;
                 end
-    %             disp([num2str((1-i/N)*100),' %'])
             end
-        
+            pool.delete()
         else
             for j = 1:N + 1
                 if w(j) < 2*max(freq_range)
                     Hw_z = (-w(j)^2*Mz+1i*w(j)*Cz+Kz); %% taking the 
 
                     Phi_F = G*G'*S;
-    %                 Zj = Hw_z\Phi_F/(Hw_z'); %%% displacement 
-                    Zj = 1i*w(j)*Hw_z\Phi_F/(Hw_z')*1i*w(j);%%% vel
-
+                   switch inputForcingType
+                        case 'disp'
+                            Zj = Hw_z\Phi_F/(Hw_z'); %%% displacement 
+                        case 'vel'
+                            Zj = 1i*w(j)*Hw_z\Phi_F/(Hw_z')*1i*w(j);%%% vel
+                   end
+                    
                     Hw = (-w(j)^2*M+1i*w(j)*C+K);
                     Z_full = Hw\G11*Zj*G11'/(Hw');
 
@@ -62,7 +70,7 @@ switch obj.System.SSOptions.ssMethod
 %             disp([num2str((1-i/N)*100),' %'])
             end
         end
-            pool.delete()
+            
     case 'direct'
         forcingdof = obj.System.forcingdof ;
                 w = obj.System.samplePSD(2,:);
