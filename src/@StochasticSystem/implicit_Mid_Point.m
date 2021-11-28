@@ -7,17 +7,21 @@ function [X,V]=implicit_Mid_Point(obj,N,T0,PSD)
     Kz = PSD.Kz;
     S = PSD.S;
     G = PSD.G;   
+    inputForcingType = obj.inputForcingType;
     m = length(Mz);
     detT = T0/N;  
     
     sigma = sqrt(S*2*pi); %variance
     M = [Mz, sparse(m,n); sparse(n,m), obj.M];
-%     C = [Cz, sparse(m,n); sparse(n,m), obj.C]; % filter with nonzero mean
-%     K = [Kz, sparse(m,n); -G, obj.K];
+    switch inputForcingType
+        case 'disp'
+            C = [Cz, sparse(m,n); sparse(n,m), obj.C]; % filter with nonzero mean
+            K = [Kz, sparse(m,n); -G, obj.K];
+        case 'vel'
+            C = [Cz, sparse(m,n); -G, obj.C]; % filter with zero mean
+            K = [Kz, sparse(m,n); sparse(n,m), obj.K];
+    end
 
-    C = [Cz, sparse(m,n); -G, obj.C]; % filter with zero mean
-    K = [Kz, sparse(m,n); sparse(n,m), obj.K];
-    
     q = zeros(m+n,N+1); qd = zeros(m+n,N+1); 
 
 %% below only for fxnl(x)

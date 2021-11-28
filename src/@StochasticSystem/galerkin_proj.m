@@ -2,21 +2,28 @@ function [w,Gz] = galerkin_proj(obj, V, PSD, SDEmethod, PSDpair)
 assert(size(V,2)==1,'The projection vector is not 1-dim!')
 Mt = V'*obj.M*V; Ct = V'*obj.C*V; Kt = V'*obj.K*V;
 tol = 1e-8; maxiter = 1000;
+inputForcingType = obj.inputForcingType;
+% [~, e, ~] = eigs(sparse(obj.K),sparse(obj.M),2,'smallestabs');
+% e = sqrt(e(1,1)); lambda = sqrt(Kt/Mt);
+% disp(num2str(e-lambda))
 switch SDEmethod
     case "filter ImplicitMidPoint"
-        
         N = obj.nPoints;
         T0 = obj.timeSpan;
         detT = T0/N; t_span = 0:detT:T0;
 
-        Mz=PSD.Mz;  Cz=PSD.Cz;   Kz=PSD.Kz;   S=PSD.S; G = PSD.G; sigma=sqrt(S*2*pi); %variance
+        Mz=PSD.Mz;  Cz=PSD.Cz;   Kz=PSD.Kz;   S=PSD.S; G = PSD.G; sigma = sqrt(S*2*pi); %variance
         m = size(Mz,1);
 
         M = [Mz, sparse(m,1); sparse(1,m), Mt];
-        %     C = [Cz, sparse(m,1); sparse(1,m), Ct]; % filter with nonzero mean
-        %     K = [Kz, sparse(m,1); -G, Kt];
-        C = [Cz, zeros(m,1); -V'*G, Ct]; % filter with zero mean
-        K = [Kz, zeros(m,1); zeros(1,m), Kt];
+        switch inputForcingType
+            case 'disp'
+                C = [Cz, sparse(m,1); sparse(1,m), Ct]; % filter with nonzero mean
+                K = [Kz, sparse(m,1); -V'*G, Kt];
+            case 'vel'
+                C = [Cz, zeros(m,1); -V'*G, Ct]; % filter with zero mean
+                K = [Kz, zeros(m,1); zeros(1,m), Kt];
+        end
         q = zeros(m+1,N+1); qd = zeros(m+1,N+1); 
 
             for i = 1:N
@@ -73,12 +80,56 @@ switch SDEmethod
         N = obj.nPoints;
         T0 = obj.timeSpan;
         detT = T0/N; t_span = 0:detT:T0;
+
+        M =  Mt; C= Ct; K=Kt;
+        q = zeros(1,N+1); qd = zeros(1,N+1); 
+        %%
+        w = obj.samplePSD(2,:);
+        nOmega = length(w); linear_galerkin = zeros(1, nOmega);
+        for j = 1:nOmega 
+                PSDmatrix = zeros(obj.n,obj.n) ;
+                PSDmatrix(end,end) = obj.samplePSD(1,j);
+                Zj = V'* PSDmatrix *V;
+%                 Zj = V(2)^2 * obj.samplePSD(1,j) ;
+                Hw = 1/(-w(j)^2*M+1i*w(j)*C+K);
+                Z_full = abs(Hw)^2*Zj; 
+
+                linear_galerkin(j) = Z_full;
+        end
+%         numerator = 1;
+%         denominator = [M,0,K];
+%         sys = tf(numerator,denominator);
+% %         bode(sys)
+        figure
+        plot(w,linear_galerkin)
+        xlim([2 25])
+        %%
+        %Heun on original system
+
+        for i = 2:N+1            
+            t = (i-1)*detT;
+            qhat = q(i-1) + detT*qd(i-1);
+            Fext = V'*obj.compute_fstochastic(t);
+            Fqxn = V'*obj.compute_fnl(V*q(i-1),V*qd(i-1));
+            qdhat = qd(i-1) - M\C*qd(i-1)*detT - M\K*q(i-1)*detT-M\Fqxn*detT + M\Fext*detT;
+            
+            Fqhat = V'*obj.compute_fnl(V*qhat,V*qdhat);
+            q(i) = q(i-1) + detT*(qd(i-1)+qdhat)/2;
+            qd(i) = qd(i-1) - M\C*(qd(i-1)+qdhat)/2*detT-...
+                M\(Fqxn+Fqhat)/2*detT - M\K*(q(i-1)+qhat)/2*detT + M\Fext*detT;
+                if norm(q(:,i)) > 1e10
+                    error('Forward step does not converge, please decrease the time step')
+                end
+%                 disp(['time integration completed: ', num2str(i/N*100), '%'])            
+        end
+
+         x = V*q ;
         %     %% ODE45 solver
-                f_p = @(t,q) Galerkin(obj,V,Mt,Ct,Kt,t,q);
-                opts = odeset('RelTol',tol,'AbsTol',tol);
-                [t_span,q_45] = ode45(f_p,t_span ,zeros(2,1), opts);
-                q_45 = q_45';
-                x = V.*q_45(1,:);
+%                 f_p = @(t,q) Galerkin(obj,V,Mt,Ct,Kt,t,q);
+%                 opts = odeset('RelTol',tol,'AbsTol',tol);
+%                 [t_span,q_45] = ode45(f_p,t_span ,zeros(2,1), opts);
+%                 q_45 = q_45';
+%                 x = V.*q_45(1,:);
         
 
 end
@@ -90,7 +141,7 @@ end
 end
 
 function dq = Galerkin(obj,V,Mt,Ct,Kt,t,q)
-            dq1 = q(2) ;
+            dq1 = q(2);
             dq2 = (V'*obj.compute_fstochastic(t) - V'*obj.compute_fnl(V*q(1),V*q(2)) - Kt*q(1) - Ct*q(2))/Mt ;
             dq = [dq1;dq2];
 end

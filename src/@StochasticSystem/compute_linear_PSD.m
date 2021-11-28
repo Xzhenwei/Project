@@ -4,14 +4,14 @@ function [w,linear_analytic]=compute_linear_PSD(obj,PSDpair,freq_range)
 
 M = obj.M; C = obj.C; K = obj.K;
 forcingdof = obj.forcingdof;
-
+inputForcingType = obj.inputForcingType;
 N = obj.nPoints;
 T0 = obj.timeSpan * 1;
 w = (1:N+1)*2*pi/T0;
 nOutput = size(PSDpair,1);
 linear_analytic = zeros(nOutput , N+1);
 
-if obj.n > 30
+if obj.n > 200
 
         euler = parcluster('local');
         pool = parpool(euler);
@@ -32,9 +32,16 @@ if obj.n > 30
         %%%% check the inverse
                 parfor j = 1:N + 1
         %             Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz)*w(j)*1i; %% taking the velocity of the auxilliary system
-                    if w(j) < 2*max(freq_range)
-                        Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz); %% taking the displacement of the auxilliary system
-%                         Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz)*w(j)*1i; %% taking the velocity of the auxilliary system
+                    Hw_z = [];
+                    if w(j) < 10*max(freq_range)
+                        switch inputForcingType
+                            case 'disp'
+                                Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz); %% taking the displacement of the auxilliary system
+                            case 'vel'
+                                Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz)*w(j)*1i; %% taking the velocity of the auxilliary system
+                        end
+%                         
+%                         
                         Phi_F = G*G'*S;
                         Zj = Hw_z*Phi_F*(Hw_z');
 
@@ -54,7 +61,7 @@ if obj.n > 30
                     for l = 1:length(forcingdof)
                         Zj(forcingdof(l),forcingdof(l)) = obj.samplePSD(1,j);
                     end
-                    if w(j) < 2*max(freq_range)
+                    if w(j) < 10*max(freq_range)
                         Hw = (-w(j)^2*M+1i*w(j)*C+K);
                         Z_full = Hw\Zj/(Hw'); 
 
@@ -89,8 +96,12 @@ else
                 for j = 1:N + 1
         %             Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz)*w(j)*1i; %% taking the velocity of the auxilliary system
                     if w(j) < 2*max(freq_range)
-                        Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz); %% taking the displacement of the auxilliary system
-%                         Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz)*w(j)*1i; %% taking the velocity of the auxilliary system
+                        switch inputForcingType
+                            case 'disp'
+                                Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz); %% taking the displacement of the auxilliary system
+                            case 'vel'
+                                Hw_z = inv(-w(j)^2*Mz+1i*w(j)*Cz+Kz)*w(j)*1i; %% taking the velocity of the auxilliary system
+                        end
                         Phi_F = G*G'*S;
                         Zj = Hw_z*Phi_F*(Hw_z');
 

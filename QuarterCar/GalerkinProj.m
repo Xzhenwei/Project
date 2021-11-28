@@ -4,7 +4,7 @@ Mt = V'*M*V; Ct = V'*C*V; Kt = V'*K*V;
 tol = 1e-8;
 SS.Fsto = SS.generate_stochastic();   n = SS.nPoints;
 T0 = SS.timeSpan;
-detT = T0/n; t_span = 0:detT:T0; 
+detT = T0/n; t_span = 0:detT:T0;
         %     %% ODE45 solver
                 f_p = @(t,q) Galerkin(SS,V,Mt,Ct,Kt,t,q);
                 opts = odeset('RelTol',tol,'AbsTol',tol);

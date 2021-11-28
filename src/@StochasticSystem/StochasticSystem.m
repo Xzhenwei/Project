@@ -53,7 +53,7 @@ classdef StochasticSystem < DynamicalSystem
         
         [w,linear_analytic]=compute_linear_PSD(obj,PSDpair,freq_range)
         
-        [w,PSD] = monte_carlo_average(obj,method,PSDpair,nRealization,clusterRun)
+        [w,PSD] = monte_carlo_average(obj,method,PSDpair,nRealization)
         
         [w,Gz] = galerkin_proj (obj, V, PSD, SDEmethod, PSDpair)
         

@@ -6,9 +6,6 @@ classdef PSDOptions < matlab.mixin.SetGet
     end
     
     methods      
-      
-
-        
         function set.nPointfilter(obj,n)
             obj.nPointfilter = n;
         end  

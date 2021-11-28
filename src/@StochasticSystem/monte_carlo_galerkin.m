@@ -5,7 +5,8 @@ U = U(:,1) ;
 filterPSD = obj.filterPSD;
 % record time and place in table
 PSD_galerkin = 0; w_galerkin = 0;
-if obj.nRealization > 1
+nRealization = obj.nRealization;
+if  nRealization > 1
     euler = parcluster('local');
     pool = parpool(euler);
 

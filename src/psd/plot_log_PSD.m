@@ -131,6 +131,6 @@ end
 function add_labels(xlab,ylab)
 xlabel(xlab,'Interpreter','latex');
 ylabel(ylab,'Interpreter','latex');
-set(gca,'FontSize',14);
+set(gca,'FontSize',16);
 grid on, axis tight; legend boxoff;
 end

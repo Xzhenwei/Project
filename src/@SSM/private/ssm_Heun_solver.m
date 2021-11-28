@@ -33,8 +33,8 @@ for i=1:N
     end
     
     %% update
-    if norm(p(:,1))>1e20
-        error('narrowing time step')
+    if norm(p(1,i+1))>1e20
+        error('narrowing time step!')
     end
     if display
         disp(['time integration completed: ', num2str(i/N*100), '%']) 

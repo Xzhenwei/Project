@@ -3,10 +3,10 @@ n=2; kappa=2e4;
 % kappa=0;
 [M,C,K,fnl,f_0] = build_model(kappa,n);
 % LINEAR QUARTER CAR with Dimension 2;
-nRealization=20;
+nRealization=100;
 T0=50; %% PSD frequency domain resolution is ~ w0= 2*pi* 1/T0
 nPoints=2^15; %% control the accuracy of numerical differential equation
-epsilon=0.1; %% forcing magnitude
+epsilon=700; %% forcing magnitude
 [samplePSD,forcingdof,IC,stochastic_f] = build_stochasticF(n,nPoints,epsilon);
 DS = DynamicalSystem();
 
@@ -24,28 +24,19 @@ clusterRun=false; %% if the script is run on local or cluster.
 method="Newmark";
 PSDpair=[1,1];
 [V,D,W] = SS.linear_spectral_analysis();
-firts_res = abs(imag(D(1)));
+first_res = abs(imag(D(1)));
 %%
+SS.sdeImpTimeDisp = false;
+tic
 [w,outputPSD] = SS.monte_carlo_average(method,PSDpair,nRealization,clusterRun);
-%% linear
-set(SS,'linear',true)
-[w_ln,outputPSD_ln] = SS.monte_carlo_average(method,PSDpair,nRealization,clusterRun);
+time_sde = toc;
+disp(['Total number of ',num2str(nRealization),'# realization takes ',...
+    num2str(time_sde),' amount of time'])
+
 %%
-[w_l,linear_analytic]=SS.compute_linear_PSD(PSDpair,[0,25]);
-%% this section plots the result of the full system response and linear analytical
-figure
-plot(w,outputPSD(1,:),'linewidth',1)
-hold on
-plot(w_ln,outputPSD_ln(1,:),'linewidth',2)
-% hold on
-xlim([0,25])
-% xlabel('\Omega frequency')
-% ylabel('Power Density')
-% legend(strcat('PSD solved by ', ": ",method), 'linear analytic')
-% legend('boxoff')
-% title('Power Spectral Density of X1')
-% grid on
+[w_linear,linear_analytic]=SS.compute_linear_PSD(PSDpair,[0,25]);
 %%
+SS.nRealization = 1;
 S = SSM(SS);
 set(S.Options, 'reltol', 0.1,'notation','multiindex')
 set(S.PSDOptions, 'nPointfilter', 1)
@@ -55,34 +46,23 @@ order = 5; % Approximation order
 %%
 S.ssmSEulerTimeDisp = false; S.tol= 1e-12;
 tic
-[wss,ssmPSD]=S.extract_PSD(PSDpair, order,' ',[0 25],false);
+[wss,ssmPSD]=S.extract_PSD(PSDpair, order,'direct heun',[0 25],false);
 time_ssm=toc;
-disp([num2str(time_ssm),' amount of time'])
+disp([num2str(time_ssm),' amount of time in SSM computation'])
 
+%%
+SS.nRealization = 1;
+tic
+[w_galerkin, PSD_galerkin] =  SS.monte_carlo_galerkin(method, PSDpair);
+time_galerkin = toc;
+disp(['Total number of ',num2str(nRealization),'# realization in Galerkin projection takes ',...
+    num2str(time_galerkin),' amount of time'])
 %% Plotting 
 clear omega
 clear Gxx
-omega.w = w_galerkin; omega.linear = w_l; omega.wss = wss;
-Gxx.Gfull = PSD_galerkin; Gxx.linear_analytic = linear_analytic; Gxx.Gss = ssmPSD; 
-plot_log_PSD(omega,Gxx,order,PSDpair,[0 30],false)
-%%
-[U, OmegaSq, NOT_CONVERGED] = eigs(sparse(K),sparse(M),2,'smallestabs');
-U = U(:,1) ;
-% record time and place in table
-euler = parcluster('local');
-pool = parpool(euler);
-PSD_galerkin = 0; w_galerkin = 0;
-parfor i=1:nRealization
-    
-    [w_g,Gz_g] = GalerkinProj (U, SS, M, C, K);
-    PSD_galerkin = PSD_galerkin+Gz_g;
-    w_galerkin = w_galerkin + w_g;
-    disp(['number of realizations left:', num2str(nRealization-i)])
-    
-end
-PSD_galerkin = PSD_galerkin/nRealization;
-w_galerkin = w_galerkin/nRealization;
-pool.delete()
-%%
-plot(w_galerkin,PSD_galerkin)
-xlim([0,30])
+omega.w = w; Gxx.Gfull = outputPSD;%outputPSD;
+omega.linear = w_linear; Gxx.linear_analytic = linear_analytic;
+omega.wss = wss; Gxx.Gss = ssmPSD;
+omega.w_galerkin = w_galerkin; Gxx.galerkin = PSD_galerkin;
+
+plot_log_PSD(omega,Gxx,order,PSDpair,[3 25],true)

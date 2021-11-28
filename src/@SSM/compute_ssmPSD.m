@@ -30,8 +30,7 @@ nOutput = size(PSDpair,1);
 Gzz = zeros(nOutput,num_points+1);
     for j=1:nOutput
 
-        [realizationX0, tX0] = generate_X_0 (obj.w_l,obj.X_l(j,:));
-        x0Realization = interp1(tX0,realizationX0,t);
+
     %% indirect filter method
         switch lower(method)
             case 'filter'
@@ -46,8 +45,7 @@ Gzz = zeros(nOutput,num_points+1);
                     z1(i) = AS(PSDpair(j,1));
                     z2(i) = AS(PSDpair(j,2));
                 end
-%                 z1 = z1 + x0Realization ;
-%                 z2 = z2 + x0Realization ;
+
                 [w,Gz]=crossPSDestimator(z1,z2,t);
                 Gzz(j,:) = Gz;
             case 'filter heun'
@@ -62,8 +60,7 @@ Gzz = zeros(nOutput,num_points+1);
                     z1(i) = AS(PSDpair(j,1));
                     z2(i) = AS(PSDpair(j,2));
                 end
-%                 z1 = z1 + x0Realization ;
-%                 z2 = z2 + x0Realization ;
+
                 [w,Gz] = crossPSDestimator(z1,z2,t);
                 Gzz(j,:) = Gz;
 
@@ -76,12 +73,24 @@ Gzz = zeros(nOutput,num_points+1);
                     z1(i) = AS(PSDpair(j,1));
                     z2(i) = AS(PSDpair(j,2));
                 end
-                z1 = z1 + x0Realization ;
-                z2 = z2 + x0Realization ;
+
                 [w,Gz] = crossPSDestimator(z1,z2,t);
                 Gzz(j,:) = Gz;
+              
+            case 'direct heun'
+                obj.System.Fsto = obj.System.generate_stochastic();
+                p = ssm_Heun_odesolver(obj, num_points, T,m,Wnode,R0);
+                z1 = zeros(1,length(p)); z2 = z1;
+                for i = 1:length(p)
+                    AS = expand_autonomous(W0,2*n, p(:,i));
+                    z1(i) = AS(PSDpair(j,1));
+                    z2(i) = AS(PSDpair(j,2));
+                end
 
-             otherwise
+                [w,Gz] = crossPSDestimator(z1,z2,t);
+                Gzz(j,:) = Gz;    
+
+            case 'ode45'
         %%
                 obj.System.Fsto = obj.System.generate_stochastic();
         %     %% ODE45 solver
@@ -98,8 +107,7 @@ Gzz = zeros(nOutput,num_points+1);
                     z1(i) = AS(PSDpair(j,1));
                     z2(i) = AS(PSDpair(j,2));
                 end
-                z1 = z1 + x0Realization ;
-                z2 = z2 + x0Realization ;
+
                 [w,Gz] = crossPSDestimator(z1,z2,t_45);
                 Gzz(j,:) = Gz;
 

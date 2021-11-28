@@ -1,4 +1,4 @@
-function [w,Gss] = extract_PSD(obj, PSDpair, ORDER, method,freq_range, clusterRun)
+function [w,Gss] = extract_PSD(obj, PSDpair, ORDER, method,freq_range)
 
 
 num_points = obj.System.nPoints;
@@ -16,19 +16,14 @@ colors = get(0,'defaultaxescolororder');
 
         disp(['Compute the PSD through SSM of order ',num2str(order)]);
         
-        [w_l, X_l] = compute_analyticSSMPSD(obj,PSDpair,freq_range,clusterRun);
-        obj.w_l = w_l;
-        obj.X_l = X_l;
+%         [w_l, X_l] = compute_analyticSSMPSD(obj,PSDpair,freq_range,clusterRun);
+%         obj.w_l = w_l;
+%         obj.X_l = X_l;
         if nRealization>1
 
-            if clusterRun
-                euler = parcluster('local');
-                pool = parpool(euler,24);
-            else
-                pool = parpool('local',2);
-            end
+            euler = parcluster('local');
+            pool = parpool(euler);
 
-        %     [w,Gss] = obj.extract_PSD( PSDpair, ORDER, method);
             Gzz = 0; wss = 0;
             parfor i=1:nRealization
                 [w,outputPSD] = compute_ssmPSD(obj, PSDpair, W0, R0, method);
@@ -51,7 +46,7 @@ colors = get(0,'defaultaxescolororder');
 
         for k = 1:nOutput
             
-            Gs(k,:) = interp1(wss,Gzz(k,:),w);%+ interp1(w_l,X_l(k,:),w);
+            Gs(k,:) = interp1(wss,Gzz(k,:),w);
 
         end
 

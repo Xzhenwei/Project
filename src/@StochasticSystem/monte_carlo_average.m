@@ -1,13 +1,8 @@
-function [w,PSD_a]=monte_carlo_average(obj,method,PSDpair,nRealization,clusterRun)
+function [w,PSD_a]=monte_carlo_average(obj,method,PSDpair,nRealization)
 
     if nRealization>1
-
-        if clusterRun
-            euler = parcluster('local');
-            pool = parpool(euler,24);
-        else
-            pool = parpool('local',2);
-        end
+        euler = parcluster('local');
+        pool = parpool(euler);
 
         X = 0; w = 0;
         parfor i=1:nRealization

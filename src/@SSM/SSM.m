@@ -27,7 +27,7 @@ classdef SSM < Manifold
         
         [w,Gzz] = compute_ssmPSD(obj, PSDpair, W0, R0, method)
         
-        [wss,Gss] = extract_PSD(obj, PSDpair, ORDER, method, freq_range, clusterRun)
+        [wss,Gss] = extract_PSD(obj, PSDpair, ORDER, method, freq_range)
         
         [w_l, X_l] = compute_analyticSSMPSD(obj,PSDpair,freq_range ,clusterRun)
     end

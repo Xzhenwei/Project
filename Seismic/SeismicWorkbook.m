@@ -9,12 +9,12 @@ kappa3 = 1.5;
 nRealization=1;
 T0=100; %% PSD frequency domain resolution is ~ 1/T0
 nPoints=2^14; %% control the accuracy of numerical differential equation
-epsilon=1e-1; %% forcing magnitude
+epsilon=0.01; %% forcing magnitude
 [filterPSD,forcingdof,stochastic_f] = build_stochasticF(m,epsilon,n);
 %%%%%%%%
 SS = StochasticSystem();
 
-set(SS,'filterPSD',filterPSD,'linear',false)
+set(SS,'filterPSD',filterPSD,'linear',false,'inputForcingType','disp')
 set(SS,'M',M,'C',C,'K',K,'fnl',fnl,'gFactor',-m);
 set(SS.Options,'Emax',5,'Nmax',10,'notation','multiindex')
 set(SS.SSOptions,'ssMethod','indirect')
@@ -38,14 +38,14 @@ disp(['Total number of ',num2str(nRealization),'# realization takes ',...
 %% SSM setting
 S = SSM(SS);
 set(S.Options, 'reltol', 0.1,'notation','multiindex')
-set(S.PSDOptions, 'nPointfilter', 0.5)
+set(S.PSDOptions, 'nPointfilter', 1)
 masterModes = [1,2];
 S.choose_E(masterModes);
 order = 5; % SSM approximation order
 %%
 tic
-[wss,ssmPSD] = S.extract_PSD(PSDpair, order,'filter',freq_range,clusterRun);
-time_ssm=toc;
+[wss,ssmPSD] = S.extract_PSD(PSDpair, order,'filter heun',freq_range,clusterRun);
+time_ssm = toc;
 disp([num2str(time_ssm),' amount of time'])
 
 %%
@@ -56,4 +56,4 @@ omega.linear = w_linear; Gxx.linear_analytic = linear_analytic;
 omega.wss = wss; Gxx.Gss = ssmPSD;
 omega.w_galerkin = w_galerkin; Gxx.galerkin = PSD_galerkin;
 
-plot_log_PSD(omega,Gxx,order,PSDpair,[0 8],false)
+plot_log_PSD(omega,Gxx,order,PSDpair,[0 7],false)
