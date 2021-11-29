@@ -16,8 +16,13 @@ for i=1:N
 
     detu = sigma*randn*sqrt(detT);  dW(2*f)=detu; 
     zhat = z(:,i)+detT*v(:,i);
-    vhat = v(:,i)-M\(detT*(C*v(:,i)+K*z(:,i))+detu);
-    phat = p(:,i)+expand_coefficients(R0,m, p(:,i))*detT+Wnode*Gs*v(:,i)*detT;
+    vhat = v(:,i)-M\(detT*(C*v(:,i)+K*z(:,i)) - detu);
+    switch inputForcingType
+        case 'disp'
+            phat = p(:,i)+expand_coefficients(R0,m, p(:,i))*detT+Wnode*Gs*z(:,i)*detT; % taking disp
+        case 'vel'
+            phat = p(:,i)+expand_coefficients(R0,m, p(:,i))*detT+Wnode*Gs*v(:,i)*detT;
+    end
     
     zbar = (z(:,i) + zhat)/2;
     vbar = (v(:,i) + vhat)/2;

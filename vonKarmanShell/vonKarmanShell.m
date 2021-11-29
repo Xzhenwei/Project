@@ -50,7 +50,7 @@ set(SS,'filterPSD',filterPSD,'linear',false,'inputForcingType','vel')
 set(SS,'M',M,'C',C,'K',K,'fnl',fnl);
 set(SS.Options,'Emax',5,'Nmax',10,'notation','multiindex')
 set(SS.SSOptions,'ssMethod','indirect','tol',1e-12)
-nRealization = 1;
+nRealization = 24;
 T0 = 30; %% PSD frequency domain resolution is ~ 1/T0
 nPoints = 2^17; %% control the accuracy of numerical differential equation
 %% 
@@ -60,7 +60,6 @@ nPoints = 2^17; %% control the accuracy of numerical differential equation
 % + \frac{\mathbf{f}_0}{2}e^{-i\phi}  $$
 % 
 %%%%%%%% Above is forcing setting and set to DynamicalSystem class
-clusterRun = false; %% if the script is run on local or cluster.
 method = "filter ImplicitMidPoint";
 PSDpair = [out,out];
 
@@ -70,7 +69,7 @@ freq_range = [30 55];
 [V,D,W] = SS.linear_spectral_analysis();
 firts_res = abs(imag(D(1)));
 tic
-[w,outputPSD] = SS.monte_carlo_average(method,PSDpair,nRealization,clusterRun);
+[w,outputPSD] = SS.monte_carlo_average(method,PSDpair,nRealization);
 time_sde = toc;
 disp(['Total number of ',num2str(nRealization),'# realization takes ',...
     num2str(time_sde),' amount of time'])
@@ -88,7 +87,7 @@ order = 5; % Approximation order
 %%
 S.ssmSEulerTimeDisp = true;
 tic
-[wss,ssmPSD] = S.extract_PSD(PSDpair, order,'filter heun',freq_range,clusterRun);
+[wss,ssmPSD] = S.extract_PSD(PSDpair, order,'filter heun',freq_range);
 time_ssm = toc;
 disp([num2str(time_ssm),' amount of time'])
 %%
@@ -101,6 +100,3 @@ omega.w_full_linear = w_l; Gxx.full_linear = outputPSD_l;
 
 plot_log_PSD(omega,Gxx,order,PSDpair,[20 50],true)
 
-%%
-% char=[num2str(nDiscretization),'nonlinEpsilon',num2str(epsilon),'T',num2str(T0),'nP',num2str(log(nPoints)/log(2)),'.mat'];
-% save(char)

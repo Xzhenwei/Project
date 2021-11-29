@@ -27,9 +27,12 @@ addpath(fullfile(maindir, 'src', 'frc'));
 
 addpath(fullfile(maindir, 'src', 'psd'));
 
+% cd('Seismic')
+% cd('..')
+% cd('vonKarmanBeam')
 % addpath(fullfile(maindir, 'QuarterCar'));
 % addpath(fullfile(maindir, 'Seismic'));
-addpath(fullfile(maindir, 'vonKarmanBeam'));
+% addpath(fullfile(maindir, 'vonKarmanBeam'));
 % addpath(fullfile(maindir, 'vonKarmanShell'));
 % psd_full (0.8)
 % run SeismicWorkBook2.mlx

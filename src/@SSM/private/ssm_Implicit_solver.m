@@ -18,7 +18,7 @@ for i=1:N
 
     detu=sigma*randn*sqrt(detT);  dW(end)=detu; 
     z(:,i+1)=z(:,i)+detT*v(:,i);
-    v(:,i+1)=v(:,i)-M\(detT*(C*v(:,i)+K*z(:,i))+dW);
+    v(:,i+1)=v(:,i)-M\(detT*(C*v(:,i)+K*z(:,i))-dW);
     
     error1 = 1e8;
     iter = 0;

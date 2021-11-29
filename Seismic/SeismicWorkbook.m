@@ -21,32 +21,39 @@ set(SS.SSOptions,'ssMethod','indirect')
 SS.add_random_forcing(nRealization, T0, nPoints,forcingdof);
 
 %%%%%%%% Above is forcing setting and set to DynamicalSystem class
-clusterRun=false; %% if the script is run on local or cluster.
 method="filter ImplicitMidPoint";
 PSDpair=[n,n];
 %%
 [V, D, W] = SS.linear_spectral_analysis();
-firts_res=abs(imag(D(1)));
+first_res=abs(imag(D(1)));
 %%
 tic
-[w,outputPSD] = SS.monte_carlo_average(method,PSDpair,nRealization,clusterRun);
+[w,outputPSD] = SS.monte_carlo_average(method,PSDpair,nRealization);
 time_sde=toc;
-disp(['Total number of ',num2str(nRealization),'# realization takes ',...
-    num2str(time_sde),' amount of time'])
+disp(['Total number of ',num2str(nRealization),'# Monte Carlo realizations takes ',...
+    num2str(time_sde),' seconds'])
 %%
-[w_linear, linear_analytic]=SS.compute_linear_PSD(PSDpair,freq_range);
+tic
+[w_galerkin, PSD_galerkin] =  SS.monte_carlo_galerkin(method, PSDpair);
+time_galerkin = toc;
+disp(['Total number of ',num2str(nRealization),'# realizations in Galerkin projection takes ',...
+    num2str(time_galerkin),' second'])
+
 %% SSM setting
 S = SSM(SS);
 set(S.Options, 'reltol', 0.1,'notation','multiindex')
-set(S.PSDOptions, 'nPointfilter', 1)
 masterModes = [1,2];
 S.choose_E(masterModes);
 order = 5; % SSM approximation order
 %%
+freq_range=[0 10];
+S.ssmSEulerTimeDisp = true;
 tic
-[wss,ssmPSD] = S.extract_PSD(PSDpair, order,'filter heun',freq_range,clusterRun);
-time_ssm = toc;
-disp([num2str(time_ssm),' amount of time'])
+[wss,ssmPSD]=S.extract_PSD(PSDpair, order,'filter heun',freq_range);
+time_ssm=toc;
+disp('SSM computation takes ',[num2str(time_ssm),' second in same anmount of realizations'])
+%%
+[w_linear, linear_analytic]=SS.compute_linear_PSD(PSDpair,freq_range);
 
 %%
 clear omega
@@ -56,4 +63,4 @@ omega.linear = w_linear; Gxx.linear_analytic = linear_analytic;
 omega.wss = wss; Gxx.Gss = ssmPSD;
 omega.w_galerkin = w_galerkin; Gxx.galerkin = PSD_galerkin;
 
-plot_log_PSD(omega,Gxx,order,PSDpair,[0 7],false)
+plot_log_PSD(omega,Gxx,order,PSDpair,freq_range,false)
