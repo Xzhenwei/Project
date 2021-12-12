@@ -29,7 +29,7 @@ for i=1:N
     pbar = (p(:,i) + phat)/2;
     
     z(:,i+1)=z(:,i)+detT*vbar;
-    v(:,i+1)=v(:,i)-M\(detT*(C*vbar+K*zbar)+detu); 
+    v(:,i+1)=v(:,i)-M\(detT*(C*vbar+K*zbar) - detu); 
     switch inputForcingType
         case 'disp'
             p(:,i+1)=p(:,i)+expand_coefficients(R0,m, pbar)*detT+Wnode*Gs*zbar*detT; % taking disp
@@ -37,7 +37,7 @@ for i=1:N
             p(:,i+1)=p(:,i)+expand_coefficients(R0,m, pbar)*detT+Wnode*Gs*vbar*detT; % taking vel
     end
     
-    %% update
+    %% display
     if norm(p(1,i+1))>1e20
         error('narrowing time step!')
     end
@@ -59,5 +59,3 @@ S = zeros(n,1);
     end
     
 end
-
-

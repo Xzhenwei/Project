@@ -3,6 +3,8 @@ assert(size(V,2)==1,'The projection vector is not 1-dim!')
 Mt = V'*obj.M*V; Ct = V'*obj.C*V; Kt = V'*obj.K*V;
 tol = 1e-8; maxiter = 1000;
 inputForcingType = obj.inputForcingType;
+dampingRatio = Ct/Mt/2/sqrt(Kt/Mt);
+disp(['The damping ratio is: ', num2str(dampingRatio)])
 % [~, e, ~] = eigs(sparse(obj.K),sparse(obj.M),2,'smallestabs');
 % e = sqrt(e(1,1)); lambda = sqrt(Kt/Mt);
 % disp(num2str(e-lambda))
@@ -25,10 +27,31 @@ switch SDEmethod
                 K = [Kz, zeros(m,1); zeros(1,m), Kt];
         end
         q = zeros(m+1,N+1); qd = zeros(m+1,N+1); 
+        if obj.galerkinHeun
+            for i = 1:N
+                detu = sigma*randn*sqrt(detT); dW = zeros(m+1,1); dW(m) = detu;
+                fnlxhat = ~obj.linear*[sparse(m,1); V'*obj.compute_fnl(V*q(m+1:end,i),V*qd(m+1:end,i))];
+                qhat = q(:,i)+detT*qd(:,i);
+                qdhat = qd(:,i)-M\(detT*(C*qd(:,i)+K*q(:,i)+fnlxhat)) + M\dW;
+                qbar = (q(:,i) + qhat)/2;
+                qdbar = (qd(:,i) + qdhat)/2;
+                
+                fnlx = ~obj.linear*[sparse(m,1); V'*obj.compute_fnl(V*qbar(m+1:end),V*qdbar(m+1:end))];
+                q(:,i+1) = q(:,i)+detT*qdbar;
+                qd(:,i+1) = qd(:,i)-M\(detT*(C*qdbar+K*qbar+fnlx)) + M\dW;
+                if norm(q(:,i+1))>1e20
+                    error('narrowing time step!')
+                end
+                if obj.sdeImpTimeDisp
+                    disp(['time integration completed: ', num2str(i/N*100), '%']) 
+                end
+                
+            end
+        else
 
             for i = 1:N
             %% predict initial iteration point
-            detu = sigma*randn*sqrt(detT); dW = zeros(m+1,1); dW(m) = detu;
+            
 
             error1 = 1e8;
             qhat = q(:,i); qdhat = qd(:,i);
@@ -72,9 +95,12 @@ switch SDEmethod
                 disp(['time integration completed: ', num2str(i/N*100), '%'])   
                 end
             end
-
+        end
+        
         X = q(m+1:end,:); x = V*X ;
+        
     case "Newmark"
+        %%% when specifying a given 
         obj.Fsto = obj.generate_stochastic();
         tol = 1e-8;
         N = obj.nPoints;
@@ -96,13 +122,14 @@ switch SDEmethod
 
                 linear_galerkin(j) = Z_full;
         end
-%         numerator = 1;
-%         denominator = [M,0,K];
-%         sys = tf(numerator,denominator);
-% %         bode(sys)
+        numerator = 1;
+        denominator = [M,C,K];
+        sys = tf(numerator,denominator);
+        bode(sys)
         figure
-        plot(w,linear_galerkin)
+        plot(w,20*log(linear_galerkin))
         xlim([2 25])
+
         %%
         %Heun on original system
 

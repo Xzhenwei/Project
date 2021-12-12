@@ -1,7 +1,7 @@
 function [PSD,forcingDof,stochastic_f] = build_stochasticF(m,epsilon,n)
-Mi=[5,0;0,5];
-Ci=[110,10;10,110];
-Ki=[20,0;0,20];
+% Mi=[5,0;0,5];
+% Ci=[110,10;10,110];
+% Ki=[20,0;0,20];
 
 Mi=5;
 Ci=100;

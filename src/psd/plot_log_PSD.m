@@ -38,8 +38,7 @@ else
 end
 k = 1;
 
-xlab = '$\omega$ Frequency';
-ylab = 'Power';
+xlab = 'Frequency ($\omega$ [rad/s])';
 linewidth = 1.5;
 nOutDof = size(Gss,1)/numel(ORDER);
 
@@ -60,7 +59,6 @@ nOutDof = size(Gss,1)/numel(ORDER);
             if dispAnaly
                 plot(w_linear,20*log(linear_analytic(i,:)),'Color',colors(j+k,:),'linewidth',linewidth,...
                     'DisplayName','linear system analytic')
-                add_labels(xlab,'Power(dB)')
                 k = k+1;
             end
             
@@ -81,7 +79,7 @@ nOutDof = size(Gss,1)/numel(ORDER);
                 'DisplayName','Galerkin projection method')
                 k = k+1;
             end
-            add_labels(xlab,'Power(dB)')
+            ylab = ['$\mathbf{\Phi}_{\mathbf{x}}$(',num2str(x1),',',num2str(x2),')',newline,'(dB)'];
         else
             %%%
             for j = 1:numel(ORDER)
@@ -115,10 +113,10 @@ nOutDof = size(Gss,1)/numel(ORDER);
                 'DisplayName','Galerkin projection method')
                 k = k+1;
             end
-            add_labels(xlab,ylab)
+            ylab = ['$\mathbf{\Phi}_{\mathbf{x}}$(',num2str(x1),',',num2str(x2),')'];
         end
-        title (['PSD of Dof (',num2str(x1),', ',num2str(x2),')'])
-        
+%         title (['PSD of Dof (',num2str(x1),', ',num2str(x2),')'])
+        add_labels(xlab,ylab)
         lgd = legend();
         set(lgd,'Interpreter','latex','Location','best');
         grid on
@@ -131,6 +129,6 @@ end
 function add_labels(xlab,ylab)
 xlabel(xlab,'Interpreter','latex');
 ylabel(ylab,'Interpreter','latex');
-set(gca,'FontSize',16);
+set(gca,'FontSize',18);
 grid on, axis tight; legend boxoff;
 end

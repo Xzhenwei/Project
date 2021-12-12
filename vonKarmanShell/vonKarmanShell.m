@@ -20,7 +20,7 @@ clear all; close all; clc
 % *system parameters*
 
 nDiscretization = 10; % Discretization parameter 30 (#DOFs is proportional to the square of this number)
-epsilon = 0.009;
+epsilon = 0.3;
 %% generate model
 
 [M,C,K,fnl,outdof,out] = build_model(nDiscretization);
@@ -50,7 +50,7 @@ set(SS,'filterPSD',filterPSD,'linear',false,'inputForcingType','vel')
 set(SS,'M',M,'C',C,'K',K,'fnl',fnl);
 set(SS.Options,'Emax',5,'Nmax',10,'notation','multiindex')
 set(SS.SSOptions,'ssMethod','indirect','tol',1e-12)
-nRealization = 24;
+nRealization = 1;
 T0 = 30; %% PSD frequency domain resolution is ~ 1/T0
 nPoints = 2^17; %% control the accuracy of numerical differential equation
 %% 
@@ -73,9 +73,9 @@ tic
 time_sde = toc;
 disp(['Total number of ',num2str(nRealization),'# realization takes ',...
     num2str(time_sde),' amount of time'])
-%% Linear Analytic
+% *Linear Analytic*
 [w_linear,linear_analytic] = SS.compute_linear_PSD(PSDpair,freq_range);
-%%
+%% SSM set up
 % *Choose Master subspace (perform resonance analysis)*
 
 S = SSM(SS);
@@ -84,19 +84,18 @@ set(S.PSDOptions, 'nPointfilter', 1)
 masterModes = [1,2];
 S.choose_E(masterModes);
 order = 5; % Approximation order
-%%
-S.ssmSEulerTimeDisp = true;
+%% Compute PSD from SSM
+S.ssmSEulerTimeDisp = false;
 tic
 [wss,ssmPSD] = S.extract_PSD(PSDpair, order,'filter heun',freq_range);
 time_ssm = toc;
 disp([num2str(time_ssm),' amount of time'])
-%%
+%% Plot
 clear omega
 clear Gxx
 omega.w = w; Gxx.Gfull = outputPSD;%outputPSD;
 omega.linear = w_linear; Gxx.linear_analytic = linear_analytic;
 omega.wss = wss; Gxx.Gss = ssmPSD;
-omega.w_full_linear = w_l; Gxx.full_linear = outputPSD_l;
-
+omega.w_full_linear = w_galerkin; Gxx.full_linear = PSD_galerkin;
+% omega.w_galerkin = w_galerkin; Gxx.galerkin = PSD_galerkin;
 plot_log_PSD(omega,Gxx,order,PSDpair,[20 50],true)
-

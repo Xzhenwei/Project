@@ -1,12 +1,10 @@
-function [M,C,K,fnl,f_0] = build_model(kappa, nElements)
+function [M,C,K,fnl,k1,c1] = build_model(kappa, nElements)
 
-[M,C,K]=L_QuarterCar_Model(nElements);
+[M,C,K,k1,c1]=L_QuarterCar_Model(nElements);
 
 n = length(M);
-forcing_dof = n;
+% forcingDof = n;
 
-f_0 = sparse(n,1);
-f_0(forcing_dof) = 1;
 
 
 %% can be transfered to QC model
@@ -15,7 +13,7 @@ f_0(forcing_dof) = 1;
 f2 = sptensor([n,n,n]); % coeff of quadratic nonlinearity/ 0 
 f3 = sptensor([n,n,n,n]); % coeff of cubic nonlinearity / single cubic spring
 %% 
-% Adding cubic spring to end node of the beam 
+% Adding cubic spring to end node of the cart
 dof =  n;
 for j = dof
     f3(j,j,j,j) = kappa;

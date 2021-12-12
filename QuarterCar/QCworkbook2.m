@@ -1,14 +1,12 @@
 %% kappa=1;
-n=2; kappa=2e4;
-epsilon = 500; %% forcing magnitude
-
-[M,C,K,fnl,f_0] = build_model(kappa,n);
+n=2; kappa=2e3;
+[M,C,K,fnl,kt,ct] = build_model(kappa,n);
 % LINEAR QUARTER CAR with Dimension 2;
-nRealization = 48;
-T0 = 50; %% PSD frequency domain resolution is ~ w0= 2*pi* 1/T0
-nPoints = 2^15; %% control the accuracy of numerical differential equation
-[samplePSD,forcingdof,IC,stochastic_f] = build_stochasticF(n,nPoints,epsilon);
-
+nRealization=100;
+T0=50; %% PSD frequency domain resolution is ~ w0= 2*pi* 1/T0
+nPoints=2^15; %% control the accuracy of numerical differential equation
+epsilon=0.01; %% forcing magnitude
+[samplePSD,forcingdof,stochastic_f] = build_stochasticF(n,nPoints,epsilon,kt,ct);
 SS = StochasticSystem();
 
 set(SS,'samplePSD',samplePSD,'linear',false)
@@ -21,7 +19,7 @@ SS.add_random_forcing(nRealization, T0, nPoints,forcingdof);
 
 method="Newmark";
 PSDpair=[1,1];
-[V,D,W] = SS.linear_spectral_analysis();
+[V,D,~] = SS.linear_spectral_analysis();
 first_res = abs(imag(D(1)));
 %%
 SS.sdeImpTimeDisp = false;
@@ -34,10 +32,8 @@ disp(['Total number of ',num2str(nRealization),'# realization takes ',...
 %%
 [w_linear,linear_analytic]=SS.compute_linear_PSD(PSDpair,[0,25]);
 %%
-SS.nRealization = 1;
 S = SSM(SS);
 set(S.Options, 'reltol', 0.1,'notation','multiindex')
-set(S.PSDOptions, 'nPointfilter', 1)
 masterModes = [1,2];
 S.choose_E(masterModes);
 order = 5; % Approximation order
@@ -55,7 +51,8 @@ tic
 time_galerkin = toc;
 disp(['Total number of ',num2str(nRealization),'# realization in Galerkin projection takes ',...
     num2str(time_galerkin),' amount of time'])
-%% Plotting 
+
+%% Plotting
 clear omega
 clear Gxx
 omega.w = w; Gxx.Gfull = outputPSD;%outputPSD;
@@ -63,4 +60,4 @@ omega.linear = w_linear; Gxx.linear_analytic = linear_analytic;
 omega.wss = wss; Gxx.Gss = ssmPSD;
 omega.w_galerkin = w_galerkin; Gxx.galerkin = PSD_galerkin;
 
-plot_log_PSD(omega,Gxx,order,PSDpair,[3 25],true)
+plot_log_PSD(omega,Gxx,order,PSDpair,[7 22],true)

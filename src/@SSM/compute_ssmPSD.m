@@ -37,7 +37,8 @@ Gzz = zeros(nOutput,num_points+1);
                 PSD = obj.System.filterPSD;
                 Mz = PSD.Mz;
                 f = length(Mz);
-                p = ssm_Implicit_solver(obj, num_points,T,PSD,f,m,Wnode,R0,inputForcingType);
+%                 p = ssm_Implicit_solver(obj, num_points,T,PSD,f,m,Wnode,R0,inputForcingType);
+                p = ssm_Euler_solver(obj, num_points,T,PSD,f,m,Wnode,R0);
 
                 z1 = zeros(1,length(p)); z2 = z1;
                 for i=1:length(p)

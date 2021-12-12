@@ -4,9 +4,6 @@ function [M,C,K,fnl] = build_model(n,m,c,k,kappa2,kappa3)
 %%
 % One end fixed Boundary condition
 
-%%% double check
-
-
 K = K(3:n+2,3:n+2); 
 C = C(3:n+2,3:n+2); 
 M = m*speye(n,n);
@@ -18,13 +15,3 @@ f3 = f3(3:n+2,3:n+2,3:n+2,3:n+2);
 
 fnl = {f2, f3};
 
-% Mi=5;
-% Ci=100;
-% Ki=20;
-% 
-% Si=epsilon^2*1e2; % white noise intensity
-% PSD.Mz=Mi;
-% PSD.Cz=Ci;
-% PSD.Kz=Ki;
-% PSD.S=Si; % random forcing parameters subject to intensity
-% PSD.G = -m*ones(n,1);

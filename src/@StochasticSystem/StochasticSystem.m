@@ -22,6 +22,7 @@ classdef StochasticSystem < DynamicalSystem
         
         SSOptions = SSOptions()
         
+        galerkinHeun = false
     end
     
 

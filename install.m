@@ -26,6 +26,18 @@ addpath(fullfile(maindir, 'src','multiindex'));
 addpath(fullfile(maindir, 'src', 'frc'));
 
 addpath(fullfile(maindir, 'src', 'psd'));
+cd('QuarterCar')
+run QuarterCarWorkbook.mlx
+cd('..')
+cd('Seismic')
+run SeismicWorkBook2.mlx  
+cd('..')
+cd('vonKarmanBeam')
+run vonKarmanBeamWorkBook.mlx 
+cd('..')
+cd('vonKarmanShell')
+run vonKarmanShellWorkbook.mlx
+cd('..')
 
 % cd('Seismic')
 % cd('..')
