@@ -26,6 +26,7 @@ addpath(fullfile(maindir, 'src','multiindex'));
 addpath(fullfile(maindir, 'src', 'frc'));
 
 addpath(fullfile(maindir, 'src', 'psd'));
+
 cd('QuarterCar')
 run QuarterCarWorkbook.mlx
 cd('..')
@@ -39,16 +40,6 @@ cd('vonKarmanShell')
 run vonKarmanShellWorkbook.mlx
 cd('..')
 
-% cd('Seismic')
-% cd('..')
-% cd('vonKarmanBeam')
-% addpath(fullfile(maindir, 'QuarterCar'));
-% addpath(fullfile(maindir, 'Seismic'));
-% addpath(fullfile(maindir, 'vonKarmanBeam'));
-% addpath(fullfile(maindir, 'vonKarmanShell'));
-% psd_full (0.8)
-% run SeismicWorkBook2.mlx
-% save('linearSeismic.mat')
 end
 
 
